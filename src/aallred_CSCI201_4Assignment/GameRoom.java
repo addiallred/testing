@@ -46,6 +46,7 @@ public class GameRoom {
 				serverThreads.add(st);
 			}
 		} catch (IOException ioe) {
+			System.out.println("Port " + cg.getPort()+ " already in use");
 			//System.out.println("Unable to connect to the server at " _+ );
 		}
 	}
@@ -169,7 +170,6 @@ public class GameRoom {
 		try {
 			rs = myStm.executeQuery("SELECT * FROM games WHERE gameName = '" + ua.getGameName()  + "';");
 			if(rs.next()) {
-				System.out.println(rs.getString("gameName"));
 				result = true;
 				//when doing multi player, check to see if the game is full, if not
 				//return false because the player can still join this game, but only if
@@ -193,7 +193,7 @@ public class GameRoom {
 		try {
 			int num = ua.getWin();
 			myStm.executeUpdate("UPDATE userInfo SET win = " + num +" WHERE username='" + ua.getUsername() + "';");
-			System.out.print(num);
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
@@ -223,6 +223,12 @@ public class GameRoom {
 		Scanner scan = new Scanner(System.in);
 		String inputFilename = scan.nextLine();
 		Config cg = new Config(inputFilename);
+		while(cg.file() == false) {
+			System.out.println("Configuration file " + inputFilename + " could not be found.");
+			System.out.print("What is the name of the config file? ");
+			inputFilename = scan.nextLine();
+			cg = new Config(inputFilename);
+		}
 		if(!cg.valid()) {
 			System.out.println("Missing parameters");
 			return;

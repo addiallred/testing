@@ -81,8 +81,6 @@ public class GameClient extends Thread{
 					letter = scan.nextLine();
 					if(letter.length() > 1) {
 						System.out.println("Please only enter a letter");
-						System.out.print("Letter to guess -");
-						letter = scan.nextLine();
 					}else {
 						letterB = true;
 					}
@@ -223,12 +221,35 @@ public class GameClient extends Thread{
 						} catch (IOException e) {
 							System.out.println(e.getMessage());
 						}
-					}
-					else if(newA.toLowerCase().equals("no")){
+					}else if(newA.toLowerCase().equals("no")){
 						System.out.println("Enter different username and password.");
-					}else {
-						System.out.println("Incorrect selection");
 					}
+					else{
+						boolean inpt = false;
+						while(!inpt) {
+							System.out.println("Incorrect selection");
+							System.out.println("Would you like to create an account with the given credintials?(yes/no)");
+							newA = scan2.nextLine();
+							if(newA.toLowerCase().equals("yes")) {
+								ua.setAction("ca");
+								try {
+									oos.writeObject(ua);
+									oos.flush();
+									logged = true;
+									break;
+								} catch (IOException e) {
+									System.out.println(e.getMessage());
+								}
+								inpt = true;
+							}
+							else if(newA.toLowerCase().equals("no")){
+								inpt = true;
+								System.out.println("Enter different username and password.");
+							}
+						}
+					}
+				}else {
+					System.out.println("Username is already in use. Please enter different credentials for username and/or password.");
 				}
 			} catch (ClassNotFoundException e) {
 				System.out.println(e.getMessage());
@@ -276,6 +297,7 @@ public class GameClient extends Thread{
 				UserAction newua = new UserAction("newG", ua.getUsername(), ua.getPassword());
 				newua.setWin(ua.getWin());
 				newua.setLose(ua.getLose());
+				newua.setGameName(gameName);
 				try {
 					oos.writeObject(newua);
 					oos.flush();
@@ -311,6 +333,7 @@ public class GameClient extends Thread{
 					nG = new Game(gameName, numPlay, ua);
 					ua.setGame(nG);
 					ua.setGameName(gameName);
+					ua.setAction("addGame");
 					try {
 						oos.writeObject(ua);
 						oos.flush();
@@ -337,6 +360,12 @@ public class GameClient extends Thread{
 		String inputFilename = scan.nextLine();
 		System.out.println("Reading config file...");
 		Config cg = new Config(inputFilename);
+		while(cg.file() == false) {
+			System.out.println("Configuration file " + inputFilename + " could not be found.");
+			System.out.print("What is the name of the config file? ");
+			inputFilename = scan.nextLine();
+			cg = new Config(inputFilename);
+		}
 		if(!cg.valid()) {
 			System.out.println("Missing parameters");
 			return;

@@ -47,11 +47,12 @@ public class ServerThread extends Thread{
 				}else {
 					boolean name = gr.userName(ua);
 					if(name) {
+						
 						System.out.println(simpDate.format(d) + " " +ua.getUsername() +" - has an account but not successfully logged in.");
 					}else {
 						System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - does not have an account so not successfully logged in");
+						ua.setAction("UNR");
 					}
-					ua.setAction("UNR");
 				}
 				try {
 					oos.writeObject(ua);
@@ -71,6 +72,7 @@ public class ServerThread extends Thread{
 				boolean exist = gr.newGame(ua);
 				//this is not working figure out why
 				if(exist) {
+					System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - " + ua.getGameName() + " already exist, so unable to start " + ua.getGameName() + ".");
 					ua.setAction("notValid");
 				}else {
 					ua.setAction("numPlay");
@@ -82,7 +84,7 @@ public class ServerThread extends Thread{
 					//System.out.println(e.getMessage());
 				}
 			}else if(ua.getAction().equals("addGame")) {
-				System.out.println(simpDate.format(d) + " " + ua.getUsername() + "successfully started game " + ua.getGameName() + ".");
+				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - successfully started game " + ua.getGameName() + ".");
 				gr.createGame(ua);
 			}else if(ua.getAction().equals("upW")) {
 				gr.updateWins(ua);
@@ -112,9 +114,10 @@ public class ServerThread extends Thread{
 				String codeW = ua.getCode();
 				for(int i = 0; i < word.length(); i++) {
 					String temp = "";
+					int k = i + 1;
 					temp += word.charAt(i);
 					if(temp.equals(letter)) {
-						System.out.print(" " + i);
+						System.out.print(" " + k);
 						tcode += letter.toUpperCase() + " ";
 					}else {
 						tcode += codeW.charAt(i*2) + " ";

@@ -16,32 +16,38 @@ public class Config {
 	private String DBU = null;
 	private String DBP = null;
 	private String wordFile = null;
+	private boolean fileopened = false;
 	public Config(String filename) {
 		Properties p = new Properties();
 		InputStream is = null;
 		try {
 			is = new FileInputStream(filename);
+			try {
+				p.load(is);
+				hostname = p.getProperty("ServerHostname");
+				try {
+					serverport = Integer.parseInt(p.getProperty("ServerPort"));
+				}catch(NumberFormatException e) {
+					//System.out.println("Invalid selection");
+				}
+				DBC = p.getProperty("DBConnection");
+				DBU = p.getProperty("DBUsername");
+				DBP = p.getProperty("DBPassword");
+				wordFile = p.getProperty("SecretWordFile");
+				fileopened = true;
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				//e1.printStackTrace();
+			}
 		} catch (FileNotFoundException e) {
+			System.out.println("file is not found");
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
-		try {
-			p.load(is);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
-		}
-		hostname = p.getProperty("ServerHostname");
-		try {
-			serverport = Integer.parseInt(p.getProperty("ServerPort"));
-		}catch(NumberFormatException e) {
-			//System.out.println("Invalid selection");
-		}
-		DBC = p.getProperty("DBConnection");
-		DBU = p.getProperty("DBUsername");
-		DBP = p.getProperty("DBPassword");
-		wordFile = p.getProperty("SecretWordFile");
-	}public boolean valid() {
+	}public boolean file() {
+		return fileopened;
+	}
+	public boolean valid() {
 		if(DBU == null || DBC == null || DBP == null || serverport == -1 || wordFile == null || hostname == null) {
 			return false;
 		}
