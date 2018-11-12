@@ -1,0 +1,232 @@
+package aallred_CSCI201_4Assignment;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Vector;
+
+public class GameRoom {
+	private Vector<ServerThread> serverThreads;
+	private Connection conn = null;
+	private Statement myStm = null;
+	private Config cg = null;
+	private ArrayList<String> words = null;
+	public GameRoom(Config cg) {
+		this.cg = cg;
+		try {
+			ServerSocket ss = new ServerSocket(cg.getPort());
+			
+			try {
+				System.out.print("Trying to connect to the data base ...");
+				Class.forName("com.mysql.jdbc.Driver");
+				conn = DriverManager.getConnection( cg.getDBC() + "?user=" + cg.getDBU() + "&password=" + cg.getDBP() + "&useSSL=false");
+				myStm = conn.createStatement();
+				System.out.println("Connected!");
+			}catch(SQLException sqle) {
+				System.out.println("Unable to connect to database " + cg.getDBC() + " with username " + cg.getDBU() + " and password " + cg.getDBP());
+			}catch(ClassNotFoundException cnfe) {
+				System.out.println("Unable to connect to database " + cg.getDBC() + " with username " + cg.getDBU() + " and password " + cg.getDBP());
+			}
+			serverThreads = new Vector<ServerThread>();
+			while(true) {
+				Socket s = ss.accept(); // blocking
+				System.out.println("Connection from: " + s.getInetAddress());
+				ServerThread st = new ServerThread(s, this);
+				serverThreads.add(st);
+			}
+		} catch (IOException ioe) {
+			//System.out.println("Unable to connect to the server at " _+ );
+		}
+	}
+	public boolean checkUser(UserAction ua){
+		ResultSet rs = null;
+		boolean result = false;
+		try {
+			rs = myStm.executeQuery("SELECT * FROM userInfo WHERE username = '" + ua.getUsername() + "' AND userpassword = '" + ua.getPassword() + "';");
+			if(rs.next()) {
+				result = true;
+				int wins = rs.getInt(3);
+				int loses = rs.getInt(4);
+				ua.setLose(loses);
+				ua.setWin(wins);
+			}
+		} catch (SQLException e) {
+			System.out.println("error" + e.getMessage());
+		}finally {
+			try {
+				if(rs != null) {
+
+					rs.close();
+				}
+			} catch (SQLException e2) {
+				// TODO: handle exception
+			}
+		}
+		return result;
+	}public void readWords() {
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
+			fr = new FileReader(cg.getWordFile());
+			br = new BufferedReader(fr);
+			String tword = "";
+			words = new ArrayList<String>();
+			while(tword != null) {
+				tword = br.readLine();
+				if(tword == null) {
+					break;
+				}
+				else {
+					words.add(tword);
+				}
+				
+			}
+		}catch(FileNotFoundException ioe) {
+			System.out.println("Word file could not be found");
+		}catch(IOException ioe) {
+			
+		}finally {
+			if(br != null) {
+				try {
+					br.close();
+				}catch(IOException ioe) {
+					
+				}
+			}if(fr != null) {
+				try {
+				fr.close();
+			}catch(IOException ioe) {
+				
+			}
+			}
+		}
+	}public String getWord() {
+		if(words == null) {
+			this.readWords();
+		}
+		Random rand = new Random();
+		int n = rand.nextInt(words.size()) + 0;
+		if(words != null) {
+			return words.get(n);
+		}
+		return "";
+		
+	}public void createAccount(UserAction ua) {
+		try {
+			myStm.executeUpdate("INSERT INTO userInfo (username, userpassword, win, lost) VALUES ('"+ ua.getUsername()+"', '" + ua.getPassword() +"', 0,0);");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}
+	}
+	public void createGame(UserAction ua) {
+		try {
+			myStm.executeUpdate("INSERT INTO games (gameName, players, player1) VALUES ('"+ ua.getGameName()+"', '" + ua.getNumP() +"', '" + ua.getUsername() + "');");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}
+	}public boolean userName(UserAction ua) {
+		ResultSet rs = null;
+		boolean result = false;
+		try {
+			rs = myStm.executeQuery("SELECT * FROM userInfo WHERE username = '" + ua.getUsername() + "';");
+			if(rs.next()) {
+				result = true;
+				int wins = rs.getInt(3);
+				int loses = rs.getInt(4);
+				ua.setLose(loses);
+				ua.setWin(wins);
+			}
+		} catch (SQLException e) {
+			System.out.println("error" + e.getMessage());
+		}finally {
+			try {
+				if(rs != null) {
+
+					rs.close();
+				}
+			} catch (SQLException e2) {
+				// TODO: handle exception
+			}
+		}
+		return result;
+	}
+	public boolean newGame(UserAction ua) {
+		ResultSet rs = null;
+		boolean result = false;
+		try {
+			rs = myStm.executeQuery("SELECT * FROM games WHERE gameName = '" + ua.getGameName()  + "';");
+			if(rs.next()) {
+				System.out.println(rs.getString("gameName"));
+				result = true;
+				//when doing multi player, check to see if the game is full, if not
+				//return false because the player can still join this game, but only if
+				//they select two in the first place, maybe do a different procedure for this
+				
+			}
+		} catch (SQLException e) {
+			System.out.println("error" + e.getMessage());
+		}finally {
+			try {
+				if(rs != null) {
+
+					rs.close();
+				}
+			} catch (SQLException e2) {
+				// TODO: handle exception
+			}
+		}
+		return result;
+	}public void updateWins(UserAction ua) {
+		try {
+			int num = ua.getWin();
+			myStm.executeUpdate("UPDATE userInfo SET win = " + num +" WHERE username='" + ua.getUsername() + "';");
+			System.out.print(num);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}
+	}public void updateLoss(UserAction ua) {
+		try {
+			int num = ua.getLose();
+			myStm.executeUpdate("UPDATE userInfo SET lost = " + num +" WHERE username='" + ua.getUsername() + "';");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}
+	}
+	public void broadcast(UserAction ua, ServerThread st) {
+		//if (message != null) {
+		if (ua != null) {
+			for(ServerThread threads : serverThreads) {
+				if (st != threads) {
+					//threads.sendMessage(message);
+					//threads.sendMessage(ua);
+				}
+			}
+		}
+	}
+	public static void main(String [] args) {
+		System.out.print("What is the name of the config file? ");
+		Scanner scan = new Scanner(System.in);
+		String inputFilename = scan.nextLine();
+		Config cg = new Config(inputFilename);
+		if(!cg.valid()) {
+			System.out.println("Missing parameters");
+			return;
+		}
+		GameRoom gr = new GameRoom(cg);
+	}
+}
