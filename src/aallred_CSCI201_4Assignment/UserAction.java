@@ -63,5 +63,7 @@ public class UserAction implements Serializable{
 		game.setCodeWord(word);
 	}public String getCode() {
 		return game.getCodeWord();
+	}public Game getGame() {
+		return game;
 	}
 }

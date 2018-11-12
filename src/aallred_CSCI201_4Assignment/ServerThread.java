@@ -33,8 +33,9 @@ public class ServerThread extends Thread{
 		    SimpleDateFormat simpDate;
 		    simpDate = new SimpleDateFormat("kk:mm:ss.SSS");
 			
-			UserAction ua = null;
+			
 		try {//-add time stamp
+			UserAction ua = null;
 			ua = (UserAction)ois.readObject();
 			if(ua.getAction().equals("data")) {
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - trying to log in with password " + ua.getPassword() + ".");
@@ -101,23 +102,54 @@ public class ServerThread extends Thread{
 				} catch (IOException e) {
 					//System.out.println(e.getMessage());
 				}
-		}else if(ua.getAction() == "gL") {
+		}else if(ua.getAction().equals("gL")) {
 			String letter = ua.getLetter();
+			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
 			if(ua.getWord().contains(letter)) {
-			System.out.println(ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
-			String word = ua.getWord();
-			String tcode = "";
-			String codeW = ua.getCode();
-			for(int i = 0; i < word.length(); i++) {
-				String temp = "";
-				temp += word.charAt(i);
-				if(temp.equals(letter)) {
-					tcode += letter.toUpperCase() + " ";
-				}else {
-					tcode += codeW.charAt(i*2) + " ";
+				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is in " + ua.getWord() + " in position(s)");
+				String word = ua.getWord();
+				String tcode = "";
+				String codeW = ua.getCode();
+				for(int i = 0; i < word.length(); i++) {
+					String temp = "";
+					temp += word.charAt(i);
+					if(temp.equals(letter)) {
+						System.out.print(" " + i);
+						tcode += letter.toUpperCase() + " ";
+					}else {
+						tcode += codeW.charAt(i*2) + " ";
+					}
 				}
+				ua.setAction("gC");
+				ua.setUserWord(tcode);
+				System.out.println(". Secret word now shows " + ua.getCode());
+			}else {
+				ua.setAction("gU");
+				ua.setLives(ua.getLives()-1);
+				System.out.println(simpDate.format(d) + " " +ua.getGameName() + " " + ua.getUsername() +" - " +  ua.getLetter() + " is not in " + ua.getWord() + ". " + ua.getGameName() + " now has " + ua.getLives() + " guesses remaining.");
 			}
-			ua.setUserWord(tcode);
+			try {
+				oos.writeObject(ua);
+				oos.flush();
+			} catch (IOException e) {
+				//System.out.println(e.getMessage());
+			}
+		}else if(ua.getAction().equals("gWord")) {
+			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed word " + ua.getLetter());
+			String word = ua.getLetter();
+			if(word.equals(ua.getWord())) {
+				//fill in other names when working on multiplayer function
+				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game. " + " <otherUsernames> have lost the game.");
+				ua.setAction("gC");
+			}else {
+				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is incorrect. " + ua.getUsername() + " has lost and is no longer in the game.");
+				ua.setAction("gU");
+			}
+			try {
+				oos.writeObject(ua);
+				oos.flush();
+			} catch (IOException e) {
+				//System.out.println(e.getMessage());
 			}
 		}
 		} catch (ClassNotFoundException e) {

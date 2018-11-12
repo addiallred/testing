@@ -90,25 +90,34 @@ public class GameClient extends Thread{
 				System.out.println(player.getWord());
 				player.setLetter(letter);
 				player.setAction("gL");
-				if(player.getWord().contains(letter)) {
+				try {
+					UserAction pass = new UserAction("gL", player.getUsername(), player.getPassword());
+					pass.setGameName(player.getGameName());
+					pass.setLetter(letter);
+					pass.setGame(player.getGame());
+					pass.setWord(player.getWord());
+					pass.setUserWord(player.getCode());
+					pass.setWin(player.getWin());
+					pass.setLose(player.getLose());
+					pass.setLives(player.getLives());
+					oos.writeObject(pass);
+					oos.flush();
+				} catch (IOException e) {
+					System.out.println(e.getMessage());
+				}try {
+					player = (UserAction)ois.readObject();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+				}
+				if(player.getAction().equals("gC")) {
 					System.out.println("The letter '" + letter + "' is in the secret word");
-					String word = player.getWord();
-					String tcode = "";
-					String codeW = player.getCode();
-					for(int i = 0; i < word.length(); i++) {
-						String temp = "";
-						temp += word.charAt(i);
-						if(temp.equals(letter)) {
-							tcode += letter.toUpperCase() + " ";
-						}else {
-							tcode += codeW.charAt(i*2) + " ";
-						}
-					}
-					System.out.println(tcode);
-					player.setUserWord(tcode);
+					
 				}else {
 					System.out.println("The letter '" + letter + "' is not in the secret word.");
-					player.setLives(player.getLives()-1);
 					if(player.getLives() == 0) {
 						System.out.println("You did not guess the secret words within 7 lives!");
 						System.out.println("The secret word was: " + player.getWord());
@@ -126,7 +135,32 @@ public class GameClient extends Thread{
 			}if(userInput == 2) {
 				System.out.print("What is the secret word?");
 				String sword = scan.nextLine();
-				if(player.getWord().equals(sword)) {
+				player.setLetter(sword);
+				player.setAction("gWord");
+				try {
+					UserAction pass = new UserAction("gWord", player.getUsername(), player.getPassword());
+					pass.setGameName(player.getGameName());
+					pass.setLetter(sword);
+					pass.setGame(player.getGame());
+					pass.setWord(player.getWord());
+					pass.setUserWord(player.getCode());
+					pass.setWin(player.getWin());
+					pass.setLose(player.getLose());
+					pass.setLives(player.getLives());
+					oos.writeObject(pass);
+					oos.flush();
+				} catch (IOException e) {
+					System.out.println(e.getMessage());
+				}try {
+					player = (UserAction)ois.readObject();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+				}
+				if(player.getAction().equals("gC")) {
 					System.out.println("That is correct! You win!");
 					int wins = player.getWin() + 1;
 					player.setWin(wins);
