@@ -12,6 +12,7 @@ public class ServerThread extends Thread{
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	private GameRoom gr;
+	private boolean broad = false;
 	private UserAction uaP;
 	public ServerThread(Socket s, GameRoom gr) {
 		try {
@@ -25,9 +26,25 @@ public class ServerThread extends Thread{
 	}
 
 	//public void sendMessage(String message) { - sending info to the game client
-	
+	public void SendMessage() {
+			if(broad) {
+				System.out.println("WE woudl be sending to " + name());
+				Game temp = game();
+				System.out.println(temp.numPlayers());
+				try {
+					oos.writeObject(temp);
+					oos.flush();
+				}catch (IOException e) {
+					//System.out.println(e.getMessage());
+				}
+			}
+	}
 	public String name() {
 		return uaP.getUsername();
+	}public String gameName() {
+		return uaP.getGameName();
+	}public Game game() {
+		return uaP.getGame();
 	}
 	public void run() {
 	    
@@ -76,17 +93,16 @@ public class ServerThread extends Thread{
 				if(exist) {
 					temp = gr.getGame(ua);
 					ua.setAction("exist");
+					ua.getGame().addUser(ua);
+					gr.broadcast(ua.getGame());
+					broad = true;
 				}
 				try {
-					System.out.println(ua.getGame().getGName());
 					oos.writeObject(ua);
 					oos.flush();
 				} catch (IOException e) {
+					System.out.println("error");
 					//System.out.println(e.getMessage());
-				}
-				ua.getGame().addThread(this);
-				for(ServerThread threads : temp.getThreads()) {
-					System.out.println(threads.name());
 				}
 			}
 			else if(ua.getAction().equals("newG")) {
@@ -108,7 +124,7 @@ public class ServerThread extends Thread{
 			}else if(ua.getAction().equals("addGame")) {
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - successfully started game " + ua.getGameName() + ".");
 				gr.createGame(ua);
-				ua.getGame().addThread(this);
+				broad = true;
 			}else if(ua.getAction().equals("upW")) {
 				gr.updateWins(ua);
 			}else if(ua.getAction().equals("upL")) {

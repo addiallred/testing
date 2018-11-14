@@ -380,13 +380,14 @@ public class GameClient extends Thread{
 					ArrayList<UserAction> us = nG.getUsers();
 					for(int i = 0; i < us.size(); i++) {
 						UserAction temp = us.get(i);
-						System.out.println("User " + temp.getUsername() + " is in the game");
-						System.out.println(temp.getUsername() + "'s Record");
-						System.out.println("----------------------");
-						System.out.println("Wins " + temp.getWin());
-						System.out.println("Losses " + temp.getLose());
+						if(!temp.getUsername().equals(ua.getUsername())) {
+							System.out.println("User " + temp.getUsername() + " is in the game");
+							System.out.println(temp.getUsername() + "'s Record");
+							System.out.println("----------------------");
+							System.out.println("Wins " + temp.getWin());
+							System.out.println("Losses " + temp.getLose());
+						}
 					}
-					nG.addUser(ua);
 				}
 			}
 		}
@@ -411,8 +412,8 @@ public class GameClient extends Thread{
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
-				}System.out.println(nG.numPlayers());
-				break;
+				}UserAction last = nG.getUsers().get(nG.numPlayers()-1);
+				
 			}
 		}
 	}

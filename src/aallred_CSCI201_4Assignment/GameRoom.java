@@ -224,9 +224,12 @@ public class GameRoom {
 	}
 	public void broadcast(Game game) {
 		//if (message != null) {
+		System.out.println(game.getGName());
 		if (game != null) {
-			for(ServerThread threads : game.getThreads()) {
-				//threads.sendGame(game);
+			for(ServerThread threads : serverThreads) {
+				if(threads.gameName().equals(game.getGName())) {
+					threads.SendMessage();
+				}
 			}
 		}
 	}
