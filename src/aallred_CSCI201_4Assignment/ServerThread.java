@@ -12,6 +12,7 @@ public class ServerThread extends Thread{
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	private GameRoom gr;
+	private UserAction uaP;
 	public ServerThread(Socket s, GameRoom gr) {
 		try {
 			this.gr = gr;
@@ -25,7 +26,9 @@ public class ServerThread extends Thread{
 
 	//public void sendMessage(String message) { - sending info to the game client
 	
-	
+	public String name() {
+		return uaP.getUsername();
+	}
 	public void run() {
 	    
 		while(true) {
@@ -37,6 +40,7 @@ public class ServerThread extends Thread{
 		try {//-add time stamp
 			UserAction ua = null;
 			ua = (UserAction)ois.readObject();
+			uaP = ua;
 			if(ua.getAction().equals("data")) {
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - trying to log in with password " + ua.getPassword() + ".");
 				boolean result = gr.checkUser(ua);
@@ -66,6 +70,24 @@ public class ServerThread extends Thread{
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() +" - created an account with password " +ua.getPassword());
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - has record 0 wins and 0 losses");
 				gr.createAccount(ua);
+			}else if(ua.getAction().equals("currG")) {
+				boolean exist = gr.newGame(ua);
+				Game temp = null;
+				if(exist) {
+					temp = gr.getGame(ua);
+					ua.setAction("exist");
+				}
+				try {
+					System.out.println(ua.getGame().getGName());
+					oos.writeObject(ua);
+					oos.flush();
+				} catch (IOException e) {
+					//System.out.println(e.getMessage());
+				}
+				ua.getGame().addThread(this);
+				for(ServerThread threads : temp.getThreads()) {
+					System.out.println(threads.name());
+				}
 			}
 			else if(ua.getAction().equals("newG")) {
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - wants to start a game called " + ua.getGameName() + ".");
@@ -86,6 +108,7 @@ public class ServerThread extends Thread{
 			}else if(ua.getAction().equals("addGame")) {
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - successfully started game " + ua.getGameName() + ".");
 				gr.createGame(ua);
+				ua.getGame().addThread(this);
 			}else if(ua.getAction().equals("upW")) {
 				gr.updateWins(ua);
 			}else if(ua.getAction().equals("upL")) {

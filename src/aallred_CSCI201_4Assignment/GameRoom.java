@@ -17,6 +17,7 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class GameRoom {
+	private ArrayList<Game> games = null;
 	private Vector<ServerThread> serverThreads;
 	private Connection conn = null;
 	private Statement myStm = null;
@@ -41,7 +42,7 @@ public class GameRoom {
 			serverThreads = new Vector<ServerThread>();
 			while(true) {
 				Socket s = ss.accept(); // blocking
-				System.out.println("Connection from: " + s.getInetAddress());
+				//System.out.println("Connection from: " + s.getInetAddress());
 				ServerThread st = new ServerThread(s, this);
 				serverThreads.add(st);
 			}
@@ -49,6 +50,16 @@ public class GameRoom {
 			System.out.println("Port " + cg.getPort()+ " already in use");
 			//System.out.println("Unable to connect to the server at " _+ );
 		}
+	}public Game getGame(UserAction ua) {
+		if(games != null) {
+			for(int i = 0; i < games.size(); i++) {
+				if(games.get(i).getGName().equals(ua.getGameName())) {
+					ua.setGame(games.get(i));
+					return games.get(i);
+				}
+			}
+		}
+		return null;
 	}
 	public boolean checkUser(UserAction ua){
 		ResultSet rs = null;
@@ -138,6 +149,10 @@ public class GameRoom {
 			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 		}
+		if(games == null) {
+			games = new ArrayList<Game>();
+		}
+		games.add(ua.getGame());
 	}public boolean userName(UserAction ua) {
 		ResultSet rs = null;
 		boolean result = false;
@@ -207,14 +222,11 @@ public class GameRoom {
 			System.out.println(e.getMessage());
 		}
 	}
-	public void broadcast(UserAction ua, ServerThread st) {
+	public void broadcast(Game game) {
 		//if (message != null) {
-		if (ua != null) {
-			for(ServerThread threads : serverThreads) {
-				if (st != threads) {
-					//threads.sendMessage(message);
-					//threads.sendMessage(ua);
-				}
+		if (game != null) {
+			for(ServerThread threads : game.getThreads()) {
+				//threads.sendGame(game);
 			}
 		}
 	}

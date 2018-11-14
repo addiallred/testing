@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameClient extends Thread{
@@ -284,8 +285,8 @@ public class GameClient extends Thread{
 				System.out.println("Invalid selection");
 			}
 		}
+		Game nG = null;
 		if(userInput == 1) {
-			Game nG = null;
 			boolean valG = false;
 			String gameName = "";
 			while(!valG) {
@@ -323,7 +324,7 @@ public class GameClient extends Thread{
 								validP = true;
 							}
 							else {
-								System.out.println("Invalid selection");
+								System.out.println("A game can only have between 1-4 players.");
 							}
 						}
 						catch(NumberFormatException e) {
@@ -345,13 +346,74 @@ public class GameClient extends Thread{
 					System.out.println(gameName + " already exist.");
 				}
 			}
-			if(nG.getCap() == 1) {
-				System.out.println("All users have joined.");
-				playGame(ua, nG);
-			}
 		}
 		else {
-			//this is for multi player handle later,wants to join a game
+			boolean validG = false;
+			while(!validG) {
+				System.out.print("What is the name of the game?");
+				String game = scan.nextLine();
+				UserAction newua = new UserAction("currG", ua.getUsername(), ua.getPassword());
+				newua.setWin(ua.getWin());
+				newua.setLose(ua.getLose());
+				newua.setGameName(game);
+				try {
+					oos.writeObject(newua);
+					oos.flush();
+				} catch (IOException e) {
+					System.out.println(e.getMessage());
+				}
+				try {
+					ua = (UserAction)ois.readObject();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+				System.out.println(ua.getAction());
+				if(ua.getGame() == null) {
+					System.out.println("Game " + game + " does not exist. Please enter a game name that exist.");
+				}else {
+					validG = true;
+					nG = ua.getGame();
+					ArrayList<UserAction> us = nG.getUsers();
+					for(int i = 0; i < us.size(); i++) {
+						UserAction temp = us.get(i);
+						System.out.println("User " + temp.getUsername() + " is in the game");
+						System.out.println(temp.getUsername() + "'s Record");
+						System.out.println("----------------------");
+						System.out.println("Wins " + temp.getWin());
+						System.out.println("Losses " + temp.getLose());
+					}
+					nG.addUser(ua);
+				}
+			}
+		}
+		if(nG.getCap() == 1) {
+			System.out.println("All users have joined.");
+			playGame(ua, nG);
+		}else if(nG.getCap() == nG.numPlayers()){
+			System.out.println("All users have joined. (creating seprate multiplayer game");
+		}
+		else {
+			int wait = nG.getCap() - nG.numPlayers();
+			if(wait == 1) {
+				System.out.println("Waiting for " + wait + " other user to join...");
+			}else {
+				System.out.println("Waiting for " + wait + "other users to join...");
+			}while(nG.getCap() != nG.numPlayers()) {
+				try {
+					nG = (Game)ois.readObject();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}System.out.println(nG.numPlayers());
+				break;
+			}
 		}
 	}
 	public static void main(String [] args) {

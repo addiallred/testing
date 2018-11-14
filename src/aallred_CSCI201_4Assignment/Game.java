@@ -2,9 +2,11 @@ package aallred_CSCI201_4Assignment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class Game implements Serializable{
 	public static final long serialVersionUID = 2;
+	private Vector<ServerThread> serverThreads = null;
 	private String name;
 	private int capacity;
 	private String word;
@@ -29,5 +31,16 @@ public class Game implements Serializable{
 		this.codeWord = word;
 	}public String getCodeWord() {
 		return codeWord;
+	}public void addUser(UserAction ua) {
+		players.add(ua);
+	}public int numPlayers() {
+		return players.size();
+	}public void addThread(ServerThread st) {
+		if(serverThreads == null) {
+			serverThreads = new Vector<ServerThread>();
+		}
+		serverThreads.add(st);
+	}public Vector<ServerThread> getThreads(){
+		return serverThreads;
 	}
 }
