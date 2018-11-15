@@ -28,7 +28,126 @@ public class GameClient extends Thread{
 		}
 	}
 	public void multiPlayer(UserAction ua, Game game) {
-		
+		System.out.println(game.getCurrPlay().getUsername());
+		System.out.println("Determining secret word...");
+		if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
+			ua.setAction("wordM");
+			try {
+				oos.reset();
+				oos.writeObject(ua);
+				oos.flush();
+			}catch(IOException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		try {
+			game = (Game)ois.readObject();
+		}catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		boolean play = true;
+		while(game.getLives() > 0 && play) {
+			System.out.println("Secret word " + game.getCodeWord());
+			System.out.println("You have " + game.getLives() + " incorrect guesses remaining.");
+			if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
+				boolean valid = false;
+				int userInput = 0;
+				Scanner scan = new Scanner(System.in);
+				while(!valid) {
+					System.out.println("\t1) Guess a letter");
+					System.out.println("\t2) Guess a word");
+					System.out.print("What would you like to do?");
+					String input = scan.nextLine();
+					try {
+						userInput = Integer.parseInt(input);
+						if(userInput == 1 || userInput == 2) {
+							valid = true;
+						}
+						else {
+							System.out.println("Invalid selection");
+						}
+					}
+					catch(NumberFormatException e) {
+						System.out.println("Invalid selection");
+					}
+				}
+				if(userInput == 1) {
+					boolean letterB = false;
+					String letter = "";
+					while(!letterB) {
+						System.out.print("Letter to guess -");
+						letter = scan.nextLine();
+						if(letter.length() > 1) {
+							System.out.println("Please only enter a letter");
+						}else {
+							letterB = true;
+						}
+					}
+					//System.out.println(game.getWord());
+					ua.setLetter(letter);
+					ua.setAction("gLM");
+					try {
+						oos.reset();
+						oos.writeObject(ua);
+						oos.flush();
+					} catch (IOException e) {
+						System.out.println(e.getMessage());
+					}try {
+						ua = (UserAction)ois.readObject();
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+					}try {
+						game = (Game)ois.readObject();
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+					}
+					//some signal in the game that the letterwasguessed correctly
+					if(ua.getAction().equals("gC")) {
+						System.out.println("The letter '" + letter + "' is in the secret word");
+					}else {
+						System.out.println("The letter '" + letter + "' is not in the secret word.");
+						if(game.getLives() == 0) {//all the players would have to lose if we eneteredthiscase
+							System.out.println("You did not guess the secret words within 7 lives!");
+							System.out.println("The secret word was: " + game.getWord());
+							int lost = ua.getLose() + 1;
+							ua.setLose(lost);
+							ua.setAction("upL");
+							try {
+								oos.reset();
+								oos.writeObject(ua);
+								oos.flush();
+							} catch (IOException e) {
+								System.out.println(e.getMessage());
+							}
+						}
+					}
+				}
+				
+			}else {
+				System.out.println("Waiting for " + game.getCurrPlay().getUsername() + " to do something...");
+					try {
+						game = (Game)ois.readObject();
+					}catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+					}
+			}
+		}
 	}
 	public void playGame(UserAction ua, Game game) {
 		System.out.println("Determining secret word...");

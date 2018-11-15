@@ -28,7 +28,6 @@ public class ServerThread extends Thread{
 	//public void sendMessage(String message) { - sending info to the game client
 	public void SendMessage() {
 			if(broad) {
-				System.out.println("WE woudl be sending to " + name());
 				Game temp = game();
 				System.out.println(temp.numPlayers());
 				Game newG = new Game(temp.getGName(), temp.getCap(),getUser());
@@ -43,6 +42,15 @@ public class ServerThread extends Thread{
 					//System.out.println(e.getMessage());
 				}
 			}
+	}public void SendGames(Game g) {
+		try {
+			oos.reset();
+			oos.writeObject(g);
+			oos.flush();
+		}catch (IOException e) {
+			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
+		}
 	}
 	public String name() {
 		return uaP.getUsername();
@@ -157,6 +165,16 @@ public class ServerThread extends Thread{
 				} catch (IOException e) {
 					//System.out.println(e.getMessage());
 				}
+		}else if(ua.getAction().equals("wordM")) {
+			String gW = gr.getWord();
+			Game temp = ua.getGame();
+			temp.setWord(gW);
+			String code = "";
+			for(int i = 0; i < gW.length(); i++) {
+				code += "_ ";
+			}
+			temp.setCodeWord(code);
+			gr.gameBroadcast(temp);
 		}else if(ua.getAction().equals("gL")) {
 			String letter = ua.getLetter();
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
@@ -190,7 +208,44 @@ public class ServerThread extends Thread{
 			} catch (IOException e) {
 				//System.out.println(e.getMessage());
 			}
-		}else if(ua.getAction().equals("gWord")) {
+		}else if(ua.getAction().equals("gLM")) {
+			System.out.println(ua.getGame().getWord());
+			String letter = ua.getLetter();
+			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
+			if(ua.getGame().getWord().contains(letter)) {
+				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is in " + ua.getGame().getWord() + " in position(s)");
+				String word = ua.getGame().getWord();
+				String tcode = "";
+				String codeW = ua.getGame().getCodeWord();
+				for(int i = 0; i < word.length(); i++) {
+					String temp = "";
+					int k = i + 1;
+					temp += word.charAt(i);
+					if(temp.equals(letter)) {
+						System.out.print(" " + k);
+						tcode += letter.toUpperCase() + " ";
+					}else {
+						tcode += codeW.charAt(i*2) + " ";
+					}
+				}
+				ua.setAction("gC");
+				ua.setUserWord(tcode);
+				System.out.println(". Secret word now shows " + ua.getCode());
+			}else {
+				ua.setAction("gU");
+				ua.getGame().setLives(ua.getGame().getLives() - 1);
+				System.out.println(simpDate.format(d) + " " +ua.getGameName() + " " + ua.getUsername() +" - " +  ua.getLetter() + " is not in " + ua.getWord() + ". " + ua.getGameName() + " now has " + ua.getLives() + " guesses remaining.");
+			}
+			try {
+				oos.writeObject(ua);
+				oos.flush();
+			} catch (IOException e) {
+				//System.out.println(e.getMessage());
+			}
+			System.out.println(ua.getGame().getCodeWord());
+			gr.gameBroadcast(ua.getGame());
+		}
+		else if(ua.getAction().equals("gWord")) {
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed word " + ua.getLetter());
 			String word = ua.getLetter();
 			if(word.equals(ua.getWord())) {

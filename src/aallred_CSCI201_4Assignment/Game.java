@@ -23,7 +23,7 @@ public class Game implements Serializable{
 		if(capacity == 1) {
 			this.full = true;
 		}
-		curr = 1;
+		curr = 0;
 		lives = 7;
 	}public int getCap() {
 		return capacity;
