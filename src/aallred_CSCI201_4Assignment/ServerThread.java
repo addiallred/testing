@@ -35,6 +35,7 @@ public class ServerThread extends Thread{
 				newG.setArray(temp.getUsers());
 				newG.setFull(temp.getFull());
 				try {
+					oos.reset();
 					oos.writeObject(newG);
 					oos.flush();
 				}catch (IOException e) {

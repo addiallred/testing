@@ -27,6 +27,9 @@ public class GameClient extends Thread{
 			System.out.println("Unable to connect to server " + hostname + " on port " + port);
 		}
 	}
+	public void multiPlayer(UserAction ua, Game game) {
+		
+	}
 	public void playGame(UserAction ua, Game game) {
 		System.out.println("Determining secret word...");
 		ua.setAction("word");
@@ -397,7 +400,8 @@ public class GameClient extends Thread{
 			System.out.println("All users have joined.");
 			playGame(ua, nG);
 		}else if(nG.getCap() == nG.numPlayers()){
-			System.out.println("All users have joined. (creating seprate multiplayer game");
+			System.out.println("All users have joined.");
+			multiPlayer(ua, nG);
 		}
 		else {
 			int wait = nG.getCap() - nG.numPlayers();
@@ -432,7 +436,7 @@ public class GameClient extends Thread{
 					System.out.println("Waiting for " + wait + "other users to join...");
 				}else {
 					System.out.println("All users have joined");
-					System.out.println("would call function here to join game");
+					multiPlayer(ua, nG);
 				}
 			}
 		}

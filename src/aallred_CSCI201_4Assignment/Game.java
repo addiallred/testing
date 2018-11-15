@@ -10,6 +10,8 @@ public class Game implements Serializable{
 	private String name;
 	private boolean full = false;
 	private int capacity;
+	private int lives;
+	private int curr;
 	private String word;
 	private String codeWord;
 	private ArrayList<UserAction> players; 
@@ -21,6 +23,8 @@ public class Game implements Serializable{
 		if(capacity == 1) {
 			this.full = true;
 		}
+		curr = 1;
+		lives = 7;
 	}public int getCap() {
 		return capacity;
 	}public ArrayList<UserAction> getUsers(){
@@ -52,5 +56,15 @@ public class Game implements Serializable{
 		return this.full;
 	}public void setArray(ArrayList<UserAction> ua) {
 		this.players = ua;
+	}public UserAction getCurrPlay() {
+		return this.players.get(curr);
+	}public void setCurr(int tc) {
+		this.curr = tc;
+	}public int getCurr() {
+		return this.curr;
+	}public void setLives(int lives) {
+		this.lives = lives;
+	}public int getLives() {
+		return this.lives;
 	}
 }
