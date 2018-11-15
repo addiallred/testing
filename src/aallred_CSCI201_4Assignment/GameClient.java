@@ -371,8 +371,10 @@ public class GameClient extends Thread{
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				}
-				System.out.println(ua.getAction());
-				if(ua.getGame() == null) {
+				if(ua.getAction().equals("fullG")) {
+					System.out.println("The game " + game + " does not have space for another user to join.");
+				}
+				else if(ua.getGame() == null) {
 					System.out.println("Game " + game + " does not exist. Please enter a game name that exist.");
 				}else {
 					validG = true;
@@ -402,18 +404,36 @@ public class GameClient extends Thread{
 			if(wait == 1) {
 				System.out.println("Waiting for " + wait + " other user to join...");
 			}else {
-				System.out.println("Waiting for " + wait + "other users to join...");
+				System.out.println("Waiting for " + wait + " other users to join...");
 			}while(nG.getCap() != nG.numPlayers()) {
+				nG = null;
+				System.out.println("game should be sent");
 				try {
-					nG = (Game)ois.readObject();
+					Game temp = (Game)ois.readObject();
+					System.out.println("the game temp has "+ temp.numPlayers());
+					nG = temp;
+					System.out.println("the number of players in the game is" + nG.numPlayers());
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
-				}UserAction last = nG.getUsers().get(nG.numPlayers()-1);
-				
+				}UserAction temp2 = nG.getUsers().get(nG.numPlayers()-1);
+				System.out.println("User " + temp2.getUsername() + " is in the game");
+				System.out.println(temp2.getUsername() + "'s Record");
+				System.out.println("----------------------");
+				System.out.println("Wins " + temp2.getWin());
+				System.out.println("Losses " + temp2.getLose());
+				wait = nG.getCap() - nG.numPlayers();
+				if(wait == 1) {
+					System.out.println("Waiting for " + wait + " other user to join...");
+				}else if(wait > 1){
+					System.out.println("Waiting for " + wait + "other users to join...");
+				}else {
+					System.out.println("All users have joined");
+					System.out.println("would call function here to join game");
+				}
 			}
 		}
 	}

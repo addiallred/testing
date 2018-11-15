@@ -31,10 +31,14 @@ public class ServerThread extends Thread{
 				System.out.println("WE woudl be sending to " + name());
 				Game temp = game();
 				System.out.println(temp.numPlayers());
+				Game newG = new Game(temp.getGName(), temp.getCap(),getUser());
+				newG.setArray(temp.getUsers());
+				newG.setFull(temp.getFull());
 				try {
-					oos.writeObject(temp);
+					oos.writeObject(newG);
 					oos.flush();
 				}catch (IOException e) {
+					System.out.println(e.getMessage());
 					//System.out.println(e.getMessage());
 				}
 			}
@@ -45,6 +49,8 @@ public class ServerThread extends Thread{
 		return uaP.getGameName();
 	}public Game game() {
 		return uaP.getGame();
+	}public UserAction getUser() {
+		return uaP;
 	}
 	public void run() {
 	    
@@ -93,9 +99,16 @@ public class ServerThread extends Thread{
 				if(exist) {
 					temp = gr.getGame(ua);
 					ua.setAction("exist");
-					ua.getGame().addUser(ua);
-					gr.broadcast(ua.getGame());
-					broad = true;
+					if(temp.getFull()) {
+						ua.setAction("fullG");
+					}else {
+						ua.getGame().addUser(ua);
+						if(temp.numPlayers() == temp.getCap()) {
+							ua.getGame().setFull(true);
+						}
+						gr.broadcast(ua.getGame());
+						broad = true;
+					}
 				}
 				try {
 					oos.writeObject(ua);

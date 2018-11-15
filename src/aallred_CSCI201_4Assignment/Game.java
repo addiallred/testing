@@ -8,6 +8,7 @@ public class Game implements Serializable{
 	public static final long serialVersionUID = 2;
 	private Vector<ServerThread> serverThreads = null;
 	private String name;
+	private boolean full = false;
 	private int capacity;
 	private String word;
 	private String codeWord;
@@ -17,6 +18,9 @@ public class Game implements Serializable{
 		this.capacity = capacity;
 		players = new ArrayList<UserAction>();
 		players.add(ua);
+		if(capacity == 1) {
+			this.full = true;
+		}
 	}public int getCap() {
 		return capacity;
 	}public ArrayList<UserAction> getUsers(){
@@ -42,5 +46,11 @@ public class Game implements Serializable{
 		serverThreads.add(st);
 	}public Vector<ServerThread> getThreads(){
 		return serverThreads;
+	}public void setFull(boolean full) {
+		this.full = full;
+	}public boolean getFull() {
+		return this.full;
+	}public void setArray(ArrayList<UserAction> ua) {
+		this.players = ua;
 	}
 }
