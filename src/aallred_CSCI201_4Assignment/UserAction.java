@@ -10,6 +10,7 @@ public class UserAction implements Serializable{
 	private String password;
 	private Game game = null;
 	private int lives;
+	private boolean alive = true;
 	private String gameName;
 	private int win;
 	private int lose;
@@ -65,5 +66,9 @@ public class UserAction implements Serializable{
 		return game.getCodeWord();
 	}public Game getGame() {
 		return game;
+	}public void setAlive(boolean alive){
+		this.alive = alive;
+	}public boolean getAlive() {
+		return this.alive;
 	}
 }
