@@ -50,6 +50,15 @@ public class ServerThread extends Thread{
 			System.out.println(e.getMessage());
 			//System.out.println(e.getMessage());
 		}
+	}public void SendUser(UserAction ua) {
+		try {
+			oos.reset();
+			oos.writeObject(ua);
+			oos.flush();
+		}catch (IOException e) {
+			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
+		}
 	}
 	public String name() {
 		return uaP.getUsername();
@@ -212,6 +221,8 @@ public class ServerThread extends Thread{
 			System.out.println(ua.getGame().getWord());
 			String letter = ua.getLetter();
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
+
+			String action = ua.getUsername() + " has guessed the letter " + ua.getLetter() + "\n ";
 			if(ua.getWord().contains(letter)) {
 				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is in " + ua.getWord() + " in position(s)");
 				String word = ua.getWord();
@@ -231,14 +242,21 @@ public class ServerThread extends Thread{
 				ua.setAction("gC");
 				ua.setUserWord(tcode);
 				System.out.println(". Secret word now shows " + ua.getCode());
+				action += "The letter '" + letter + "' is in the secret word";
+				ua.getGame().setAction(action);
 			}else {
+				action += "The letter '" + letter + "' is not the secret word";
+				ua.getGame().setAction(action);
 				ua.setAction("gU");
 				ua.setLives(ua.getLives()-1);
+				Game game = ua.getGame();
+				game.setLives(game.getLives()-1);
 				System.out.println(simpDate.format(d) + " " +ua.getGameName() + " " + ua.getUsername() +" - " +  ua.getLetter() + " is not in " + ua.getWord() + ". " + ua.getGameName() + " now has " + ua.getLives() + " guesses remaining.");
 			}
+			gr.userBroadcast(ua);
 			try {
 				oos.reset();
-				oos.writeObject(ua);
+				//oos.writeObject(ua);
 				oos.flush();
 			} catch (IOException e) {
 				//System.out.println(e.getMessage());

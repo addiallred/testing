@@ -28,8 +28,6 @@ public class GameClient extends Thread{
 		}
 	}
 	public void multiPlayer(UserAction ua, Game game) {
-		System.out.println(game.getCurrPlay().getUsername());
-		System.out.println(game.numPlayers());
 		System.out.println("Determining secret word...");
 		if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
 			ua.setAction("wordM");
@@ -93,9 +91,13 @@ public class GameClient extends Thread{
 					}
 					ua.setLetter(letter);
 					ua.setAction("gLM");
+					if(game.getCurr() + 1 == game.numPlayers()) {
+						game.setCurr(0);
+					}else {
+						game.setCurr(game.getCurr() + 1);
+					}
 					ua.setGame(game);
 					try {
-						System.out.println(ua.getGame().getWord());
 						oos.reset();
 						oos.writeObject(ua);
 						oos.flush();
@@ -110,31 +112,59 @@ public class GameClient extends Thread{
 						// TODO Auto-generated catch block
 						//e1.printStackTrace();
 					}
-					System.out.println(ua.getGame().getCodeWord() + " " + ua.getGame().getWord());
 					if(ua.getAction().equals("gC")) {
 						System.out.println("The letter '" + letter + "' is in the secret word");
 						
 					}else {
 						System.out.println("The letter '" + letter + "' is not in the secret word.");
-						//need to decrese the lives of the player
 					}
+				}else {
+					System.out.print("What is the secret word?");
+					String sword = scan.nextLine();
+					ua.setLetter(sword);
+					ua.setAction("gWordM");
+					try {
+						oos.reset();
+						oos.writeObject(ua);
+						oos.flush();
+					} catch (IOException e) {
+						System.out.println(e.getMessage());
+					}try {
+						ua = (UserAction)ois.readObject();
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+					}
+					if(ua.getAction().equals("gC")) {
+						System.out.println("That is correct! You win!");
+						int wins = ua.getWin() + 1;
+						ua.setWin(wins);
+						ua.setAction("upW");
+						
+					}else {
+						System.out.println("That is not the secret word!");
+						System.out.println("The secret word was: " + game.getWord());
+						int lost = ua.getLose() + 1;
+						ua.setLose(lost);
+						ua.setAction("upL");
+					}
+					try {
+						oos.writeObject(ua);
+						oos.flush();
+					} catch (IOException e) {
+						System.out.println(e.getMessage());
+					}
+					play = false;
 				}
 				game = ua.getGame();
-				System.out.println(game.getCurr());
-				System.out.println(game.numPlayers());
-				for(int i = 0; i < game.numPlayers(); i++) {
-					System.out.println(game.getUsers().get(i).getUsername());
-				}
-				if(game.getCurr() + 1 == game.numPlayers()) {
-					game.setCurr(0);
-				}else {
-					game.setCurr(game.getCurr() + 1);
-				}
-				System.out.println(game.getCurr());
 			}else {
+				UserAction otherUser = null;
 				System.out.println("Waiting for " + game.getCurrPlay().getUsername() + " to do something...");
 					try {
-						game = (Game)ois.readObject();
+						otherUser = (UserAction)ois.readObject();
 					}catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						//e.printStackTrace();
@@ -142,6 +172,9 @@ public class GameClient extends Thread{
 						// TODO Auto-generated catch block
 						//e.printStackTrace();
 					}
+				game = otherUser.getGame();
+				System.out.println(game.getAction());
+				ua.setGame(game);
 			}
 		}
 	}
@@ -516,9 +549,6 @@ public class GameClient extends Thread{
 			playGame(ua, nG);
 		}else if(nG.getCap() == nG.numPlayers()){
 			System.out.println("All users have joined.");
-			for(int i = 0; i < nG.numPlayers(); i++) {
-				System.out.println(nG.numPlayers() + " " + nG.getUsers().get(i).getUsername());
-			}
 			multiPlayer(ua, nG);
 		}
 		else {
@@ -529,7 +559,6 @@ public class GameClient extends Thread{
 				System.out.println("Waiting for " + wait + " other users to join...");
 			}while(nG.getCap() != nG.numPlayers()) {
 				nG = null;
-				System.out.println("game should be sent");
 				try {
 					Game temp = (Game)ois.readObject();
 					System.out.println("the game temp has "+ temp.numPlayers());
@@ -554,9 +583,6 @@ public class GameClient extends Thread{
 					System.out.println("Waiting for " + wait + "other users to join...");
 				}else {
 					System.out.println("All users have joined");
-					for(int i = 0; i < nG.numPlayers(); i++) {
-						System.out.println(nG.numPlayers() + " " + nG.getUsers().get(i).getUsername());
-					}
 					multiPlayer(ua, nG);
 				}
 			}

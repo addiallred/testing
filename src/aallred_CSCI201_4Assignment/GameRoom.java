@@ -238,6 +238,14 @@ public class GameRoom {
 				}
 			}
 		}
+	}public void userBroadcast(UserAction ua) {
+		if(ua != null) {
+			for(ServerThread threads: serverThreads) {
+				if(threads.gameName().equals(ua.getGameName())) {
+					threads.SendUser(ua);
+				}
+			}
+		}
 	}
 	public static void main(String [] args) {
 		System.out.print("What is the name of the config file? ");

@@ -10,6 +10,7 @@ public class Game implements Serializable{
 	private String name;
 	private boolean full = false;
 	private int capacity;
+	private String action;
 	private int lives;
 	private int curr;
 	private String word;
@@ -66,5 +67,9 @@ public class Game implements Serializable{
 		this.lives = lives;
 	}public int getLives() {
 		return this.lives;
+	}public String getAction() {
+		return action;
+	}public void setAction(String action) {
+		this.action = action;
 	}
 }
