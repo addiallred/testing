@@ -52,7 +52,7 @@ public class GameClient extends Thread{
 			//e.printStackTrace();
 		}
 		boolean play = true;
-		while(game.getLives() > 0 && play) {
+		while(game.getLives() > 0 && ua.getAlive()) {
 			System.out.println("Secret word " + game.getCodeWord());
 			System.out.println("You have " + game.getLives() + " incorrect guesses remaining.");
 			if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
@@ -157,7 +157,8 @@ public class GameClient extends Thread{
 					} catch (IOException e) {
 						System.out.println(e.getMessage());
 					}
-					play = false;
+					ua.setAlive(false);
+					//if the user guesses the word and it is false does it reduce the game life total
 				}
 				game = ua.getGame();
 			}else {

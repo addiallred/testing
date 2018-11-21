@@ -222,7 +222,7 @@ public class ServerThread extends Thread{
 			String letter = ua.getLetter();
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
 
-			String action = ua.getUsername() + " has guessed the letter " + ua.getLetter() + "\n ";
+			String action = ua.getUsername() + " has guessed the letter " + ua.getLetter() + "\n";
 			if(ua.getWord().contains(letter)) {
 				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is in " + ua.getWord() + " in position(s)");
 				String word = ua.getWord();
@@ -261,6 +261,27 @@ public class ServerThread extends Thread{
 			} catch (IOException e) {
 				//System.out.println(e.getMessage());
 			}
+		}else if(ua.getAction().equals("gWordM")) {
+			String word = ua.getLetter();
+			String action = ua.getUsername() + " has guessed the letter " + ua.getLetter() + "\n";
+			if(word.equals(ua.getWord())) {
+				//fill in other names when working on multiplayer function
+				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game. " + " <otherUsernames> have lost the game.");
+				ua.setAction("gC");
+				action += ua.getUsername() + " guessed the word correctly. You lose!";
+				ua.getGame().setAction(action);
+			}else {
+				action += ua.getUsername() + " did not guess the word correctly." + ua.getUsername() + " lost!";
+				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is incorrect. " + ua.getUsername() + " has lost and is no longer in the game.");
+				ua.setAction("gU");
+				//do we reduce their life yes or no
+			}try {
+				oos.writeObject(ua);
+				oos.flush();
+			} catch (IOException e) {
+				//System.out.println(e.getMessage());
+			}
+			gr.userBroadcast(ua);
 		}
 		else if(ua.getAction().equals("gWord")) {
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed word " + ua.getLetter());
