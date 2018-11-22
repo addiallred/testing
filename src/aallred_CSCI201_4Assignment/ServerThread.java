@@ -37,7 +37,7 @@ public class ServerThread extends Thread{
 					oos.writeObject(newG);
 					oos.flush();
 				}catch (IOException e) {
-					System.out.println(e.getMessage());
+					//System.out.println(e.getMessage());
 					//System.out.println(e.getMessage());
 				}
 			}
@@ -47,7 +47,7 @@ public class ServerThread extends Thread{
 			oos.writeObject(g);
 			oos.flush();
 		}catch (IOException e) {
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
 			//System.out.println(e.getMessage());
 		}
 	}public void SendUser(UserAction ua) {
@@ -56,7 +56,8 @@ public class ServerThread extends Thread{
 			oos.writeObject(ua);
 			oos.flush();
 		}catch (IOException e) {
-			System.out.println(e.getMessage());
+			//System.out.println("in here");
+			//System.out.println(e.getMessage());
 			//System.out.println(e.getMessage());
 		}
 	}
@@ -80,7 +81,6 @@ public class ServerThread extends Thread{
 		try {//-add time stamp
 			UserAction ua = null;
 			ua = (UserAction)ois.readObject();
-			System.out.println(ua.getAction());
 			uaP = ua;
 			if(ua.getAction().equals("data")) {
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - trying to log in with password " + ua.getPassword() + ".");
@@ -100,6 +100,7 @@ public class ServerThread extends Thread{
 					}
 				}
 				try {
+					oos.reset();
 					oos.writeObject(ua);
 					oos.flush();
 				} catch (IOException e) {
@@ -218,10 +219,8 @@ public class ServerThread extends Thread{
 				//System.out.println(e.getMessage());
 			}
 		}else if(ua.getAction().equals("gLM")) {
-			System.out.println(ua.getGame().getWord());
 			String letter = ua.getLetter();
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
-
 			String action = ua.getUsername() + " has guessed the letter " + ua.getLetter() + "\n";
 			if(ua.getWord().contains(letter)) {
 				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is in " + ua.getWord() + " in position(s)");

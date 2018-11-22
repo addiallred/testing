@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -48,6 +49,30 @@ public class Config {
 		return fileopened;
 	}
 	public boolean valid() {
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
+			fr = new FileReader(wordFile);
+			br = new BufferedReader(fr);
+			
+		}catch(FileNotFoundException ioe) {
+		}catch(IOException ioe) {
+			
+		}finally {
+			if(br != null) {
+				try {
+					br.close();
+				}catch(IOException ioe) {
+					
+				}
+			}if(fr != null) {
+				try {
+				fr.close();
+			}catch(IOException ioe) {
+				
+			}
+			}
+		}
 		if(DBU == null || DBC == null || DBP == null || serverport == -1 || wordFile == null || hostname == null) {
 			return false;
 		}

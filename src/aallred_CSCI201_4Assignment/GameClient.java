@@ -135,7 +135,9 @@ public class GameClient extends Thread{
 					ua.setAlive(false);
 					game.updateArray(ua);
 					boolean gotP = true;
-					while(gotP) {
+					int aliveC = 0;
+					while(gotP && aliveC < game.numPlayers()) {
+						aliveC++;
 						if(game.getCurr() + 1 == game.numPlayers()) {
 							game.setCurr(0);
 							if(game.getCurrPlay().getAlive()) {
@@ -208,7 +210,6 @@ public class GameClient extends Thread{
 			int lost = ua.getLose() + 1;
 			ua.setLose(lost);
 			ua.setAction("upL");
-			
 			try {
 				oos.reset();
 				oos.writeObject(ua);
@@ -477,7 +478,7 @@ public class GameClient extends Thread{
 		while(notval) {
 			System.out.println("1) Start a Game");
 			System.out.println("2) Join a Game");
-			System.out.println("Would you like to start a game or join a game?");
+			System.out.print("Would you like to start a game or join a game?");
 			
 			try {
 				userInput = Integer.parseInt(scan.nextLine());
@@ -497,7 +498,7 @@ public class GameClient extends Thread{
 			boolean valG = false;
 			String gameName = "";
 			while(!valG) {
-				System.out.println("What is the name of the game?");
+				System.out.print("What is the name of the game?");
 				gameName = scan.nextLine(); //for multiple player need to store this 
 				//maybe have a game object
 				ua.setAction("newG");
@@ -522,7 +523,7 @@ public class GameClient extends Thread{
 					//e.printStackTrace();
 				}if(ua.getAction().equals("numPlay")) {
 					int numPlay = 0;
-					System.out.println("How many users will be playing (1-4)?");
+					System.out.print("How many users will be playing (1-4)?");
 					boolean validP = false;
 					while(!validP) {
 						try {
@@ -617,9 +618,7 @@ public class GameClient extends Thread{
 				nG = null;
 				try {
 					Game temp = (Game)ois.readObject();
-					System.out.println("the game temp has "+ temp.numPlayers());
 					nG = temp;
-					System.out.println("the number of players in the game is" + nG.numPlayers());
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
@@ -657,9 +656,23 @@ public class GameClient extends Thread{
 			cg = new Config(inputFilename);
 		}
 		if(!cg.valid()) {
-			System.out.println("Missing parameters");
+			System.out.println("Missing parameter(s):");
+			if(cg.getDBC() == null) {
+				System.out.println("- Database Connection String");
+			}if(cg.getDBP() == null) {
+				System.out.println("- Database Password");
+			}if(cg.getDBU() == null) {
+				System.out.println("- Database Username");
+			}if(cg.getHostName() == null) {
+				System.out.println("- Server Hostname");
+			}if(cg.getPort() == -1) {
+				System.out.println("- Server Port");
+			}if(cg.getWordFile() == null) {
+				System.out.println("- Secret Word File");
+			}
 			return;
 		}
+		System.out.println(cg.file());
 		System.out.println("Server Hostname - " + cg.getHostName());
 		System.out.println("Server Port - " + cg.getPort());
 		System.out.println("Database Connection String - " + cg.getDBC());
