@@ -52,7 +52,7 @@ public class GameClient extends Thread{
 			//e.printStackTrace();
 		}
 		boolean play = true;
-		while(game.getLives() > 0 && ua.getAlive()) {
+		while(game.getLives() > 0 && ua.getAlive() && game.getWin()) {
 			System.out.println("Secret word " + game.getCodeWord());
 			System.out.println("You have " + game.getLives() + " incorrect guesses remaining.");
 			if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
@@ -91,10 +91,19 @@ public class GameClient extends Thread{
 					}
 					ua.setLetter(letter);
 					ua.setAction("gLM");
-					if(game.getCurr() + 1 == game.numPlayers()) {
-						game.setCurr(0);
-					}else {
-						game.setCurr(game.getCurr() + 1);
+					boolean gotP = true;
+					while(gotP) {
+						if(game.getCurr() + 1 == game.numPlayers()) {
+							game.setCurr(0);
+							if(game.getCurrPlay().getAlive()) {
+								gotP = false;
+							}
+						}else {
+							game.setCurr(game.getCurr() + 1);
+							if(game.getCurrPlay().getAlive()) {
+								gotP = false;
+							}
+						}
 					}
 					ua.setGame(game);
 					try {
@@ -123,6 +132,23 @@ public class GameClient extends Thread{
 					String sword = scan.nextLine();
 					ua.setLetter(sword);
 					ua.setAction("gWordM");
+					ua.setAlive(false);
+					game.updateArray(ua);
+					boolean gotP = true;
+					while(gotP) {
+						if(game.getCurr() + 1 == game.numPlayers()) {
+							game.setCurr(0);
+							if(game.getCurrPlay().getAlive()) {
+								gotP = false;
+							}
+						}else {
+							game.setCurr(game.getCurr() + 1);
+							if(game.getCurrPlay().getAlive()) {
+								gotP = false;
+							}
+						}
+					}
+					ua.setGame(game);
 					try {
 						oos.reset();
 						oos.writeObject(ua);
@@ -178,7 +204,36 @@ public class GameClient extends Thread{
 				ua.setGame(game);
 			}
 		}
+		if(ua.getAlive()) {
+			int lost = ua.getLose() + 1;
+			ua.setLose(lost);
+			ua.setAction("upL");
+			
+			try {
+				oos.reset();
+				oos.writeObject(ua);
+				oos.flush();
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		System.out.println(ua.getUsername() + "'s Record");
+		System.out.println("----------------------");
+		System.out.println("Wins " + ua.getWin());
+		System.out.println("Losses " + ua.getLose());
+		System.out.println("Thank you for playing Hangman!");
+		for(int i = 0; i < game.numPlayers(); i++) {
+			UserAction temp = game.getUsers().get(i);
+			if(!temp.getUsername().equals(ua.getUsername())) {
+				System.out.println(temp.getUsername() + "'s Record");
+				System.out.println("----------------------");
+				System.out.println("Wins " + temp.getWin());
+				System.out.println("Losses " + temp.getLose());
+				System.out.println("Thank you for playing Hangman!");
+			}
+		}
 	}
+	//this is single player
 	public void playGame(UserAction ua, Game game) {
 		System.out.println("Determining secret word...");
 		ua.setAction("word");

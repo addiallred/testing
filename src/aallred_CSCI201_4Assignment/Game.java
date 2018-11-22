@@ -9,6 +9,7 @@ public class Game implements Serializable{
 	private Vector<ServerThread> serverThreads = null;
 	private String name;
 	private boolean full = false;
+	private boolean winner = true;
 	private int capacity;
 	private String action;
 	private int lives;
@@ -71,5 +72,11 @@ public class Game implements Serializable{
 		return action;
 	}public void setAction(String action) {
 		this.action = action;
+	}public void updateArray(UserAction ua) {
+		players.set(curr, ua);
+	}public boolean getWin() {
+		return winner;
+	}public void setWin(boolean win) {
+		winner = win;
 	}
 }

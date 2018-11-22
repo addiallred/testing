@@ -263,24 +263,21 @@ public class ServerThread extends Thread{
 			}
 		}else if(ua.getAction().equals("gWordM")) {
 			String word = ua.getLetter();
-			String action = ua.getUsername() + " has guessed the letter " + ua.getLetter() + "\n";
+			String action = ua.getUsername() + " has guessed the word " + ua.getLetter() + "\n";
 			if(word.equals(ua.getWord())) {
 				//fill in other names when working on multiplayer function
 				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game. " + " <otherUsernames> have lost the game.");
 				ua.setAction("gC");
 				action += ua.getUsername() + " guessed the word correctly. You lose!";
 				ua.getGame().setAction(action);
+				ua.getGame().setWin(false);
 			}else {
-				action += ua.getUsername() + " did not guess the word correctly." + ua.getUsername() + " lost!";
+				action += ua.getUsername() + " did not guess the word correctly. " + ua.getUsername() + " lost!";
 				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is incorrect. " + ua.getUsername() + " has lost and is no longer in the game.");
 				ua.setAction("gU");
 				//do we reduce their life yes or no
-			}try {
-				oos.writeObject(ua);
-				oos.flush();
-			} catch (IOException e) {
-				//System.out.println(e.getMessage());
 			}
+			ua.getGame().setAction(action);
 			gr.userBroadcast(ua);
 		}
 		else if(ua.getAction().equals("gWord")) {
