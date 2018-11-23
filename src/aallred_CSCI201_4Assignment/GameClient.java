@@ -33,7 +33,6 @@ public class GameClient extends Thread{
 			ua.setAction("wordM");
 			try {
 				oos.reset();
-				System.out.println(game.numPlayers());
 				ua.setGame(game);
 				oos.writeObject(ua);
 				oos.flush();
@@ -43,7 +42,6 @@ public class GameClient extends Thread{
 		}
 		try {
 			game = (Game)ois.readObject();
-			System.out.println(game.numPlayers());
 		}catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -52,7 +50,7 @@ public class GameClient extends Thread{
 			//e.printStackTrace();
 		}
 		boolean play = true;
-		while(game.getLives() > 0 && ua.getAlive() && game.getWin()) {
+		while(game.getLives() > 0 && game.getWin()) {
 			System.out.println("Secret word " + game.getCodeWord());
 			System.out.println("You have " + game.getLives() + " incorrect guesses remaining.");
 			if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
@@ -565,6 +563,7 @@ public class GameClient extends Thread{
 				newua.setLose(ua.getLose());
 				newua.setGameName(game);
 				try {
+					oos.reset();
 					oos.writeObject(newua);
 					oos.flush();
 				} catch (IOException e) {

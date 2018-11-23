@@ -242,7 +242,6 @@ public class GameRoom {
 		if(ua != null) {
 			for(ServerThread threads: serverThreads) {
 				if(threads.gameName().equals(ua.getGameName())) {
-					System.out.println(threads.name());
 					threads.SendUser(ua);
 				}
 			}

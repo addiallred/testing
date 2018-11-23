@@ -21,6 +21,7 @@ public class ServerThread extends Thread{
 			ois = new ObjectInputStream(s.getInputStream());
 			this.start();
 		} catch (IOException ioe) {
+			System.out.println("this is where the user stops");
 			System.out.println("ioe in ServerThread constructor: " + ioe.getMessage());
 		}
 	}
@@ -262,10 +263,15 @@ public class ServerThread extends Thread{
 			}
 		}else if(ua.getAction().equals("gWordM")) {
 			String word = ua.getLetter();
+			Game game = ua.getGame();
 			String action = ua.getUsername() + " has guessed the word " + ua.getLetter() + "\n";
 			if(word.equals(ua.getWord())) {
 				//fill in other names when working on multiplayer function
-				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game. " + " <otherUsernames> have lost the game.");
+				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game." );
+				for(int i = 0; i < game.numPlayers(); i++) {
+					System.out.print( " " + game.getUsers().get(i).getUsername());
+				}
+				System.out.print(" have lost the game.");
 				ua.setAction("gC");
 				action += ua.getUsername() + " guessed the word correctly. You lose!";
 				ua.getGame().setAction(action);
@@ -284,7 +290,7 @@ public class ServerThread extends Thread{
 			String word = ua.getLetter();
 			if(word.equals(ua.getWord())) {
 				//fill in other names when working on multiplayer function
-				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game. " + " <otherUsernames> have lost the game.");
+				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game.");
 				ua.setAction("gC");
 			}else {
 				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is incorrect. " + ua.getUsername() + " has lost and is no longer in the game.");
