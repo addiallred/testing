@@ -10,7 +10,9 @@ public class Game implements Serializable{
 	private String name;
 	private boolean full = false;
 	private boolean winner = true;
+	private String winnerName;
 	private int capacity;
+	private int active;
 	private String action;
 	private int lives;
 	private int curr;
@@ -27,6 +29,7 @@ public class Game implements Serializable{
 		}
 		curr = 0;
 		lives = 7;
+		this.active = this.capacity;
 	}public int getCap() {
 		return capacity;
 	}public ArrayList<UserAction> getUsers(){
@@ -78,5 +81,13 @@ public class Game implements Serializable{
 		return winner;
 	}public void setWin(boolean win) {
 		winner = win;
+	}public void setWinner(String name) {
+		this.winnerName = name;
+	}public String getWinner() {
+		return winnerName;
+	}public int active() {
+		return this.active;
+	}public void updateActive() {
+		this.active = this.active -1;
 	}
 }

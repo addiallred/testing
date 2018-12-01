@@ -50,7 +50,7 @@ public class GameClient extends Thread{
 			//e.printStackTrace();
 		}
 		boolean play = true;
-		while(game.getLives() > 0 && game.getWin()) {
+		while(game.getLives() > 0 && game.getWin() && game.active() > 0) {
 			System.out.println("Secret word " + game.getCodeWord());
 			System.out.println("You have " + game.getLives() + " incorrect guesses remaining.");
 			if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
@@ -124,6 +124,7 @@ public class GameClient extends Thread{
 						
 					}else {
 						System.out.println("The letter '" + letter + "' is not in the secret word.");
+						
 					}
 				}else {
 					System.out.print("What is the secret word?");
@@ -169,7 +170,7 @@ public class GameClient extends Thread{
 						int wins = ua.getWin() + 1;
 						ua.setWin(wins);
 						ua.setAction("upW");
-						
+						ua.getGame().setWin(false);
 					}else {
 						System.out.println("That is not the secret word!");
 						System.out.println("The secret word was: " + game.getWord());
@@ -216,21 +217,30 @@ public class GameClient extends Thread{
 				System.out.println(e.getMessage());
 			}
 		}
-		System.out.println(ua.getUsername() + "'s Record");
-		System.out.println("----------------------");
-		System.out.println("Wins " + ua.getWin());
-		System.out.println("Losses " + ua.getLose());
-		System.out.println("Thank you for playing Hangman!");
-		for(int i = 0; i < game.numPlayers(); i++) {
-			UserAction temp = game.getUsers().get(i);
-			if(!temp.getUsername().equals(ua.getUsername())) {
-				System.out.println(temp.getUsername() + "'s Record");
-				System.out.println("----------------------");
-				System.out.println("Wins " + temp.getWin());
-				System.out.println("Losses " + temp.getLose());
-				System.out.println("Thank you for playing Hangman!");
+			System.out.println(ua.getUsername() + "'s Record");
+			System.out.println("----------------------");
+			System.out.println("Wins " + ua.getWin());
+			System.out.println("Losses " + ua.getLose());
+			for(int i = 0; i < game.numPlayers(); i++) {
+				System.out.println();
+				UserAction temp = game.getUsers().get(i);
+				if(!temp.getUsername().equals(ua.getUsername())) {
+					System.out.println(temp.getUsername() + "'s Record");
+					System.out.println("----------------------");
+					if(temp.getUsername().equals(game.getWinner())) {
+						int wins = temp.getWin() + 1;
+						System.out.println("Wins " + wins);
+						System.out.println("Losses " + temp.getLose());
+					}else {
+						int lose = temp.getLose() + 1;
+						System.out.println("Wins " + temp.getWin());
+						System.out.println("Losses " + lose);
+					}
+				}
 			}
-		}
+
+			System.out.println("Thank you for playing Hangman!");
+		
 	}
 	//this is single player
 	public void playGame(UserAction ua, Game game) {
@@ -531,10 +541,12 @@ public class GameClient extends Thread{
 							}
 							else {
 								System.out.println("A game can only have between 1-4 players.");
+								System.out.print("How many users will be playing (1-4)?");
 							}
 						}
 						catch(NumberFormatException e) {
 							System.out.println("Invalid selection");
+							System.out.print("How many users will be playing (1-4)?");
 						}
 					}
 					nG = new Game(gameName, numPlay, ua);
@@ -671,7 +683,6 @@ public class GameClient extends Thread{
 			}
 			return;
 		}
-		System.out.println(cg.file());
 		System.out.println("Server Hostname - " + cg.getHostName());
 		System.out.println("Server Port - " + cg.getPort());
 		System.out.println("Database Connection String - " + cg.getDBC());

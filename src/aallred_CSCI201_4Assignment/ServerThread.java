@@ -88,7 +88,7 @@ public class ServerThread extends Thread{
 				boolean result = gr.checkUser(ua);
 				if(result) {
 					ua.setAction("UR");
-					System.out.println(simpDate.format(d) + " "  +ua.getUsername() + " - succeffully logged in.");
+					System.out.println(simpDate.format(d) + " "  +ua.getUsername() + " - successfully logged in.");
 					System.out.println(simpDate.format(d) + " "  +ua.getUsername() + " - has record " + ua.getWin() + " wins and " + ua.getLose() + " losses");
 				}else {
 					boolean name = gr.userName(ua);
@@ -96,7 +96,7 @@ public class ServerThread extends Thread{
 						
 						System.out.println(simpDate.format(d) + " " +ua.getUsername() +" - has an account but not successfully logged in.");
 					}else {
-						System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - does not have an account so not successfully logged in");
+						System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - does not have an account so not successfully logged in.");
 						ua.setAction("UNR");
 					}
 				}
@@ -115,16 +115,21 @@ public class ServerThread extends Thread{
 				gr.createAccount(ua);
 			}else if(ua.getAction().equals("currG")) {
 				boolean exist = gr.newGame(ua);
+				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - wants to join a game called " +  ua.getGameName() + ".");
 				Game temp = null;
 				if(exist) {
 					temp = gr.getGame(ua);
 					ua.setAction("exist");
 					if(temp.getFull()) {
 						ua.setAction("fullG");
+						System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - " + ua.getGameName() + " exists, but " + ua.getUsername() + " unable to join because maximum number of players have already joined " + ua.getGameName());
 					}else {
+						System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - successfully joined game " + ua.getGameName() + "." );
 						ua.getGame().addUser(ua);
 						if(temp.numPlayers() == temp.getCap()) {
-							ua.getGame().setFull(true);
+						}else {
+							int num = temp.getCap() - temp.numPlayers();
+							System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - " + ua.getGameName() + " needs " + num + " more players to start game.");
 						}
 						gr.broadcast(ua.getGame());
 						broad = true;
@@ -157,6 +162,10 @@ public class ServerThread extends Thread{
 			}else if(ua.getAction().equals("addGame")) {
 				System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - successfully started game " + ua.getGameName() + ".");
 				gr.createGame(ua);
+				int num = ua.getNumP() - 1;
+				if(num != 0) {
+					System.out.println(simpDate.format(d) + " "+ ua.getUsername()  + " - " + ua.getGameName() + " needs " + num + " more player to start game.");
+				}
 				broad = true;
 			}else if(ua.getAction().equals("upW")) {
 				gr.updateWins(ua);
@@ -165,6 +174,7 @@ public class ServerThread extends Thread{
 			}else if(ua.getAction().equals("word")) {
 				String gW = gr.getWord();
 				ua.setWord(gW);
+				System.out.println(simpDate.format(d) + " "+ ua.getUsername() + " - " + ua.getGameName() + " has 1 player so starting game. Secret word is " + gW + ".");
 				String code = "";
 				for(int i = 0; i < gW.length(); i++) {
 					code += "_ ";
@@ -180,6 +190,7 @@ public class ServerThread extends Thread{
 			String gW = gr.getWord();
 			Game temp = ua.getGame();
 			temp.setWord(gW);
+			System.out.println(simpDate.format(d) + " "+ ua.getUsername() + " - " + ua.getGameName() + " has " + ua.getGame().numPlayers() + " players so starting game. Secret word is " + gW + ".");
 			String code = "";
 			for(int i = 0; i < gW.length(); i++) {
 				code += "_ ";
@@ -207,7 +218,7 @@ public class ServerThread extends Thread{
 				}
 				ua.setAction("gC");
 				ua.setUserWord(tcode);
-				System.out.println(". Secret word now shows " + ua.getCode());
+				System.out.println(". Secret word now shows " + ua.getCode() + ".");
 			}else {
 				ua.setAction("gU");
 				ua.setLives(ua.getLives()-1);
@@ -241,7 +252,7 @@ public class ServerThread extends Thread{
 				}
 				ua.setAction("gC");
 				ua.setUserWord(tcode);
-				System.out.println(". Secret word now shows " + ua.getCode());
+				System.out.println(". Secret word now shows " + ua.getCode() + ".");
 				action += "The letter '" + letter + "' is in the secret word";
 				ua.getGame().setAction(action);
 			}else {
@@ -251,7 +262,17 @@ public class ServerThread extends Thread{
 				ua.setLives(ua.getLives()-1);
 				Game game = ua.getGame();
 				game.setLives(game.getLives()-1);
-				System.out.println(simpDate.format(d) + " " +ua.getGameName() + " " + ua.getUsername() +" - " +  ua.getLetter() + " is not in " + ua.getWord() + ". " + ua.getGameName() + " now has " + ua.getLives() + " guesses remaining.");
+				System.out.println(simpDate.format(d) + " " +ua.getGameName() + " " + ua.getUsername() +" - " +  ua.getLetter() + " is not in " + ua.getWord() + ". " + ua.getGameName() + " now has " + ua.getGame().getLives() + " guesses remaining.");
+				if(game.getLives() == 0) {
+					System.out.print(simpDate.format(d) + " " +ua.getGameName() + " " + ua.getUsername() +" - " + " no one guessed the word correctly and the game has ran out of lives. ");
+					for(int i = 0; i < game.numPlayers(); i++) {
+						System.out.print(" " + game.getUsers().get(i).getUsername());
+						if(i+1 < game.numPlayers()) {
+							System.out.print(",");
+						}
+					}
+					System.out.println(" have all lost.");
+				}
 			}
 			gr.userBroadcast(ua);
 			try {
@@ -262,6 +283,7 @@ public class ServerThread extends Thread{
 				//System.out.println(e.getMessage());
 			}
 		}else if(ua.getAction().equals("gWordM")) {
+			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + " guessed word " + ua.getLetter());
 			String word = ua.getLetter();
 			Game game = ua.getGame();
 			String action = ua.getUsername() + " has guessed the word " + ua.getLetter() + "\n";
@@ -269,14 +291,18 @@ public class ServerThread extends Thread{
 				//fill in other names when working on multiplayer function
 				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game." );
 				for(int i = 0; i < game.numPlayers(); i++) {
-					System.out.print( " " + game.getUsers().get(i).getUsername());
+					if(!game.getUsers().get(i).getUsername().equals(ua.getUsername())) {
+						System.out.print( " " + game.getUsers().get(i).getUsername());
+					}
 				}
 				System.out.print(" have lost the game.");
 				ua.setAction("gC");
 				action += ua.getUsername() + " guessed the word correctly. You lose!";
 				ua.getGame().setAction(action);
 				ua.getGame().setWin(false);
+				ua.getGame().setWinner(ua.getUsername());
 			}else {
+				ua.getGame().updateActive();
 				action += ua.getUsername() + " did not guess the word correctly. " + ua.getUsername() + " lost!";
 				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is incorrect. " + ua.getUsername() + " has lost and is no longer in the game.");
 				ua.setAction("gU");
