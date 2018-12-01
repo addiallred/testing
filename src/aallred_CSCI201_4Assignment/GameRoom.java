@@ -202,6 +202,8 @@ public class GameRoom {
 			} catch (SQLException e2) {
 				// TODO: handle exception
 			}
+		}if(getGame(ua) == null) {
+			return false;
 		}
 		return result;
 	}public void updateWins(UserAction ua) {
@@ -225,8 +227,10 @@ public class GameRoom {
 	public void broadcast(Game game) {
 		if (game != null) {
 			for(ServerThread threads : serverThreads) {
-				if(threads.gameName().equals(game.getGName())) {
-					threads.SendMessage();
+				if(threads.gameName() != null) {
+					if(threads.gameName().equals(game.getGName())) {
+						threads.SendMessage();
+					}
 				}
 			}
 		}
