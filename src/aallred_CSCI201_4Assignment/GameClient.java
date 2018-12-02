@@ -258,7 +258,7 @@ public class GameClient extends Thread{
 			}
 			System.out.println();
 			System.out.println("Thank you for playing Hangman!");
-		
+			
 	}
 	//this is single player
 	public void playGame(UserAction ua, Game game) {
@@ -436,6 +436,14 @@ public class GameClient extends Thread{
 		System.out.println("Losses " + player.getLose());
 		System.out.println();
 		System.out.println("Thank you for playing Hangman!");
+		player.setAction("remG");
+		try {
+			oos.reset();
+			oos.writeObject(player);
+			oos.flush();
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	public void run() {
 		boolean logged = false;

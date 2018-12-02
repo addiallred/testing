@@ -228,6 +228,13 @@ public class GameRoom {
 				}
 			}
 		}
+	}public void removeGame(UserAction ua) {
+		for(int i = 0; i < games.size(); i++) {
+			if(games.get(i).getGName().equals(ua.getGame().getGName())) {
+				games.remove(i);
+			}
+		}
+
 	}
 	public static void main(String [] args) {
 		System.out.print("What is the name of the config file? ");

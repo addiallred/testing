@@ -310,6 +310,8 @@ public class ServerThread extends Thread{
 			}
 			ua.getGame().setAction(action);
 			gr.userBroadcast(ua);
+		}else if(ua.getAction().equals("remG")) {
+			gr.removeGame(ua);
 		}
 		else if(ua.getAction().equals("gWord")) {
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed word " + ua.getLetter());
