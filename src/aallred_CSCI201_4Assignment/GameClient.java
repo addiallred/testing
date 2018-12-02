@@ -564,6 +564,7 @@ public class GameClient extends Thread{
 				System.out.print("What is the name of the game?");
 				gameName = scan.nextLine(); //for multiple player need to store this 
 				//maybe have a game object
+				gameName = gameName.toLowerCase();
 				ua.setAction("newG");
 				ua.setGameName(gameName);
 				UserAction newua = new UserAction("newG", ua.getUsername(), ua.getPassword());

@@ -55,7 +55,7 @@ public class GameRoom {
 	}public Game getGame(UserAction ua) {
 		if(games != null) {
 			for(int i = 0; i < games.size(); i++) {
-				if(games.get(i).getGName().equals(ua.getGameName())) {
+				if(games.get(i).getGName().toLowerCase().equals(ua.getGameName().toLowerCase())) {
 					ua.setGame(games.get(i));
 					return games.get(i);
 				}
@@ -223,14 +223,14 @@ public class GameRoom {
 	}public void userBroadcast(UserAction ua) {
 		if(ua != null) {
 			for(ServerThread threads: serverThreads) {
-				if(threads.gameName().equals(ua.getGameName())) {
+				if(threads.gameName().toLowerCase().equals(ua.getGameName().toLowerCase())) {
 					threads.SendUser(ua);
 				}
 			}
 		}
 	}public void removeGame(UserAction ua) {
 		for(int i = 0; i < games.size(); i++) {
-			if(games.get(i).getGName().equals(ua.getGame().getGName())) {
+			if(games.get(i).getGName().toLowerCase().equals(ua.getGame().getGName().toLowerCase())) {
 				games.remove(i);
 			}
 		}
