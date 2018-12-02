@@ -152,7 +152,7 @@ public class GameRoom {
 		boolean result = false;
 		try {
 			rs = myStm.executeQuery("SELECT * FROM userInfo WHERE BINARY username = '" + ua.getUsername() + "';");
-			System.out.println("in here");
+			
 			if(rs.next()) {
 				result = true;
 				int wins = rs.getInt(3);

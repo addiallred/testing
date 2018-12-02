@@ -28,6 +28,7 @@ public class GameClient extends Thread{
 		}
 	}
 	public void multiPlayer(UserAction ua, Game game) {
+		System.out.println();
 		System.out.println("Determining secret word...");
 		if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
 			ua.setAction("wordM");
@@ -37,7 +38,7 @@ public class GameClient extends Thread{
 				oos.writeObject(ua);
 				oos.flush();
 			}catch(IOException e) {
-				System.out.println(e.getMessage());
+				//System.out.println(e.getMessage());
 			}
 		}
 		try {
@@ -51,7 +52,9 @@ public class GameClient extends Thread{
 		}
 		boolean play = true;
 		while(game.getLives() > 0 && game.getWin() && game.active() > 0) {
+			System.out.println();
 			System.out.println("Secret word " + game.getCodeWord());
+			System.out.println();
 			System.out.println("You have " + game.getLives() + " incorrect guesses remaining.");
 			if(ua.getUsername().equals(game.getCurrPlay().getUsername())) {
 				boolean valid = false;
@@ -68,10 +71,12 @@ public class GameClient extends Thread{
 							valid = true;
 						}
 						else {
+							System.out.println();
 							System.out.println("Invalid selection");
 						}
 					}
 					catch(NumberFormatException e) {
+						System.out.println();
 						System.out.println("Invalid selection");
 					}
 				}
@@ -79,9 +84,11 @@ public class GameClient extends Thread{
 					boolean letterB = false;
 					String letter = "";
 					while(!letterB) {
+						System.out.println();
 						System.out.print("Letter to guess -");
 						letter = scan.nextLine();
 						if(letter.length() > 1) {
+							System.out.println();
 							System.out.println("Please only enter a letter");
 						}else {
 							letterB = true;
@@ -120,13 +127,16 @@ public class GameClient extends Thread{
 						//e1.printStackTrace();
 					}
 					if(ua.getAction().equals("gC")) {
+						System.out.println();
 						System.out.println("The letter '" + letter + "' is in the secret word");
 						
 					}else {
-						System.out.println("The letter '" + letter + "' is not in the secret word.");
+						System.out.println();
+						System.out.println("The letter/character '" + letter + "' is not in the secret word.");
 						
 					}
 				}else {
+					System.out.println();
 					System.out.print("What is the secret word?");
 					String sword = scan.nextLine();
 					ua.setLetter(sword);
@@ -166,13 +176,16 @@ public class GameClient extends Thread{
 						//e1.printStackTrace();
 					}
 					if(ua.getAction().equals("gC")) {
+						System.out.println();
 						System.out.println("That is correct! You win!");
 						int wins = ua.getWin() + 1;
 						ua.setWin(wins);
 						ua.setAction("upW");
 						ua.getGame().setWin(false);
 					}else {
+						System.out.println();
 						System.out.println("That is not the secret word!");
+						System.out.println();
 						System.out.println("The secret word was: " + game.getWord());
 						int lost = ua.getLose() + 1;
 						ua.setLose(lost);
@@ -190,6 +203,7 @@ public class GameClient extends Thread{
 				game = ua.getGame();
 			}else {
 				UserAction otherUser = null;
+				System.out.println();
 				System.out.println("Waiting for " + game.getCurrPlay().getUsername() + " to do something...");
 					try {
 						otherUser = (UserAction)ois.readObject();
@@ -217,6 +231,7 @@ public class GameClient extends Thread{
 				System.out.println(e.getMessage());
 			}
 		}
+		System.out.println();
 			System.out.println(ua.getUsername() + "'s Record");
 			System.out.println("----------------------");
 			System.out.println("Wins " + ua.getWin());
@@ -238,12 +253,13 @@ public class GameClient extends Thread{
 					}
 				}
 			}
-
+			System.out.println();
 			System.out.println("Thank you for playing Hangman!");
 		
 	}
 	//this is single player
 	public void playGame(UserAction ua, Game game) {
+		System.out.println();
 		System.out.println("Determining secret word...");
 		ua.setAction("word");
 		UserAction player = new UserAction("word", ua.getUsername(), ua.getPassword());
@@ -255,7 +271,7 @@ public class GameClient extends Thread{
 			oos.writeObject(player);
 			oos.flush();
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
 		}try {
 			player = (UserAction)ois.readObject();
 		} catch (ClassNotFoundException e) {
@@ -267,7 +283,9 @@ public class GameClient extends Thread{
 		}
 		boolean play = true;
 		while(player.getLives() > 0 && play) {
+			System.out.println();
 			System.out.println("Secret word " + player.getCode());
+			System.out.println();
 			System.out.println("You have " + player.getLives() + " incorrect guesses remaining.");
 			boolean valid = false;
 			int userInput = 0;
@@ -283,10 +301,12 @@ public class GameClient extends Thread{
 						valid = true;
 					}
 					else {
+						System.out.println();
 						System.out.println("Invalid selection");
 					}
 				}
 				catch(NumberFormatException e) {
+					System.out.println();
 					System.out.println("Invalid selection");
 				}
 			}
@@ -294,15 +314,16 @@ public class GameClient extends Thread{
 				boolean letterB = false;
 				String letter = "";
 				while(!letterB) {
+					System.out.println();
 					System.out.print("Letter to guess -");
 					letter = scan.nextLine();
 					if(letter.length() > 1) {
-						System.out.println("Please only enter a letter");
+						System.out.println();
+						System.out.println("Please only enter a letter/single character");
 					}else {
 						letterB = true;
 					}
 				}
-				System.out.println(player.getWord());
 				player.setLetter(letter);
 				player.setAction("gL");
 				try {
@@ -329,12 +350,16 @@ public class GameClient extends Thread{
 					//e1.printStackTrace();
 				}
 				if(player.getAction().equals("gC")) {
+					System.out.println();
 					System.out.println("The letter '" + letter + "' is in the secret word");
 					
 				}else {
-					System.out.println("The letter '" + letter + "' is not in the secret word.");
+					System.out.println();
+					System.out.println("The letter/character '" + letter + "' is not in the secret word.");
 					if(player.getLives() == 0) {
+						System.out.println();
 						System.out.println("You did not guess the secret words within 7 lives!");
+						System.out.println();
 						System.out.println("The secret word was: " + player.getWord());
 						int lost = player.getLose() + 1;
 						player.setLose(lost);
@@ -348,6 +373,7 @@ public class GameClient extends Thread{
 					}
 				}
 			}if(userInput == 2) {
+				System.out.println();
 				System.out.print("What is the secret word?");
 				String sword = scan.nextLine();
 				player.setLetter(sword);
@@ -376,13 +402,16 @@ public class GameClient extends Thread{
 					//e1.printStackTrace();
 				}
 				if(player.getAction().equals("gC")) {
+					System.out.println();
 					System.out.println("That is correct! You win!");
 					int wins = player.getWin() + 1;
 					player.setWin(wins);
 					player.setAction("upW");
 					
 				}else {
+					System.out.println();
 					System.out.println("That is not the secret word!");
+					System.out.println();
 					System.out.println("The secret word was: " + player.getWord());
 					int lost = player.getLose() + 1;
 					player.setLose(lost);
@@ -397,16 +426,19 @@ public class GameClient extends Thread{
 				play = false;
 			}
 		}
+		System.out.println();
 		System.out.println(player.getUsername() + "'s Record");
 		System.out.println("----------------------");
 		System.out.println("Wins " + player.getWin());
 		System.out.println("Losses " + player.getLose());
+		System.out.println();
 		System.out.println("Thank you for playing Hangman!");
 	}
 	public void run() {
 		boolean logged = false;
 		UserAction ua = null;
 		while(!logged) {
+			System.out.println();
 			System.out.print("Username:");
 			Scanner scan2 = new Scanner(System.in);
 			String uname = scan2.nextLine();
@@ -424,26 +456,30 @@ public class GameClient extends Thread{
 				if(ua.getAction().equals("UR")) {
 					logged = true;
 				}else if(ua.getAction().equals("UNR")) {
+					System.out.println();
 					System.out.println("No account exists with those credentials.");
 					System.out.println("Would you like to create an account with the given credintials?(yes/no)");
 					String newA = scan2.nextLine();
 					if(newA.toLowerCase().equals("yes")) {
 						ua.setAction("ca");
 						try {
+							oos.reset();
 							oos.writeObject(ua);
 							oos.flush();
 							
-							System.out.println("in here");
+						
 							break;
 						} catch (IOException e) {
 							System.out.println(e.getMessage());
 						}
 					}else if(newA.toLowerCase().equals("no")){
+						System.out.println();
 						System.out.println("Enter different username and password.");
 					}
 					else{
 						boolean inpt = false;
 						while(!inpt) {
+							System.out.println();
 							System.out.println("Incorrect selection");
 							System.out.println("Would you like to create an account with the given credintials?(yes/no)");
 							newA = scan2.nextLine();
@@ -461,20 +497,24 @@ public class GameClient extends Thread{
 							}
 							else if(newA.toLowerCase().equals("no")){
 								inpt = true;
+								System.out.println();
 								System.out.println("Enter different username and password.");
 							}
 						}
 					}
 				}else {
+					System.out.println();
 					System.out.println("Username is already in use. Please enter different credentials for username and/or password.");
 				}
 			} catch (ClassNotFoundException e) {
-				System.out.println(e.getMessage());
+				//System.out.println(e.getMessage());
 			} catch (IOException e) {
-				System.out.println(e.getMessage());
+				//System.out.println(e.getMessage());
 			}
 		}
+		System.out.println();
 		System.out.println("Great! You are now logged in as " + ua.getUsername());
+		System.out.println();
 		System.out.println(ua.getUsername() + "'s Record");
 		System.out.println("----------------------");
 		System.out.println("Wins " + ua.getWin());
@@ -484,6 +524,7 @@ public class GameClient extends Thread{
 		Scanner scan = new Scanner(System.in);
 		int userInput = 0;
 		while(notval) {
+			System.out.println();
 			System.out.println("1) Start a Game");
 			System.out.println("2) Join a Game");
 			System.out.print("Would you like to start a game or join a game?");
@@ -494,10 +535,12 @@ public class GameClient extends Thread{
 					notval = false;
 				}
 				else {
+					System.out.println();
 					System.out.println("Invalid selection");
 				}
 			}
 			catch(NumberFormatException e) {
+				System.out.println();
 				System.out.println("Invalid selection");
 			}
 		}
@@ -506,6 +549,7 @@ public class GameClient extends Thread{
 			boolean valG = false;
 			String gameName = "";
 			while(!valG) {
+				System.out.println();
 				System.out.print("What is the name of the game?");
 				gameName = scan.nextLine(); //for multiple player need to store this 
 				//maybe have a game object
@@ -531,6 +575,7 @@ public class GameClient extends Thread{
 					//e.printStackTrace();
 				}if(ua.getAction().equals("numPlay")) {
 					int numPlay = 0;
+					System.out.println();
 					System.out.print("How many users will be playing (1-4)?");
 					boolean validP = false;
 					while(!validP) {
@@ -540,11 +585,13 @@ public class GameClient extends Thread{
 								validP = true;
 							}
 							else {
+								System.out.println();
 								System.out.println("A game can only have between 1-4 players.");
 								System.out.print("How many users will be playing (1-4)?");
 							}
 						}
 						catch(NumberFormatException e) {
+							System.out.println();
 							System.out.println("Invalid selection");
 							System.out.print("How many users will be playing (1-4)?");
 						}
@@ -561,6 +608,7 @@ public class GameClient extends Thread{
 					}
 					valG = true;
 				}else {
+					System.out.println();
 					System.out.println(gameName + " already exist.");
 				}
 			}
@@ -568,6 +616,7 @@ public class GameClient extends Thread{
 		else {
 			boolean validG = false;
 			while(!validG) {
+				System.out.println();
 				System.out.print("What is the name of the game?");
 				String game = scan.nextLine();
 				UserAction newua = new UserAction("currG", ua.getUsername(), ua.getPassword());
@@ -591,15 +640,18 @@ public class GameClient extends Thread{
 					//e.printStackTrace();
 				}
 				if(ua.getAction().equals("fullG")) {
+					System.out.println();
 					System.out.println("The game " + game + " does not have space for another user to join.");
 				}
 				else if(ua.getGame() == null) {
+					System.out.println();
 					System.out.println("Game " + game + " does not exist. Please enter a game name that exist.");
 				}else {
 					validG = true;
 					nG = ua.getGame();
 					ArrayList<UserAction> us = nG.getUsers();
 					for(int i = 0; i < us.size(); i++) {
+						System.out.println();
 						UserAction temp = us.get(i);
 						if(!temp.getUsername().equals(ua.getUsername())) {
 							System.out.println("User " + temp.getUsername() + " is in the game");
@@ -613,17 +665,21 @@ public class GameClient extends Thread{
 			}
 		}
 		if(nG.getCap() == 1) {
+			System.out.println();
 			System.out.println("All users have joined.");
 			playGame(ua, nG);
 		}else if(nG.getCap() == nG.numPlayers()){
+			System.out.println();
 			System.out.println("All users have joined.");
 			multiPlayer(ua, nG);
 		}
 		else {
 			int wait = nG.getCap() - nG.numPlayers();
 			if(wait == 1) {
+				System.out.println();
 				System.out.println("Waiting for " + wait + " other user to join...");
 			}else {
+				System.out.println();
 				System.out.println("Waiting for " + wait + " other users to join...");
 			}while(nG.getCap() != nG.numPlayers()) {
 				nG = null;
@@ -636,7 +692,8 @@ public class GameClient extends Thread{
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
-				}UserAction temp2 = nG.getUsers().get(nG.numPlayers()-1);
+				}System.out.println();
+				UserAction temp2 = nG.getUsers().get(nG.numPlayers()-1);
 				System.out.println("User " + temp2.getUsername() + " is in the game");
 				System.out.println(temp2.getUsername() + "'s Record");
 				System.out.println("----------------------");
@@ -644,10 +701,13 @@ public class GameClient extends Thread{
 				System.out.println("Losses " + temp2.getLose());
 				wait = nG.getCap() - nG.numPlayers();
 				if(wait == 1) {
+					System.out.println();
 					System.out.println("Waiting for " + wait + " other user to join...");
 				}else if(wait > 1){
+					System.out.println();
 					System.out.println("Waiting for " + wait + "other users to join...");
 				}else {
+					System.out.println();
 					System.out.println("All users have joined");
 					multiPlayer(ua, nG);
 				}

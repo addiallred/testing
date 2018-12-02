@@ -200,7 +200,7 @@ public class ServerThread extends Thread{
 		}else if(ua.getAction().equals("gL")) {
 			String letter = ua.getLetter();
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
-			if(ua.getWord().contains(letter)) {
+			if(ua.getWord().toLowerCase().contains(letter.toLowerCase())) {
 				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is in " + ua.getWord() + " in position(s)");
 				String word = ua.getWord();
 				String tcode = "";
@@ -209,7 +209,7 @@ public class ServerThread extends Thread{
 					String temp = "";
 					int k = i + 1;
 					temp += word.charAt(i);
-					if(temp.equals(letter)) {
+					if(temp.toLowerCase().equals(letter.toLowerCase())) {
 						System.out.print(" " + k);
 						tcode += letter.toUpperCase() + " ";
 					}else {
@@ -234,7 +234,7 @@ public class ServerThread extends Thread{
 			String letter = ua.getLetter();
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed letter " + ua.getLetter() );
 			String action = ua.getUsername() + " has guessed the letter " + ua.getLetter() + "\n";
-			if(ua.getWord().contains(letter)) {
+			if(ua.getWord().toLowerCase().contains(letter.toLowerCase())) {
 				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is in " + ua.getWord() + " in position(s)");
 				String word = ua.getWord();
 				String tcode = "";
@@ -243,7 +243,7 @@ public class ServerThread extends Thread{
 					String temp = "";
 					int k = i + 1;
 					temp += word.charAt(i);
-					if(temp.equals(letter)) {
+					if(temp.toLowerCase().equals(letter.toLowerCase())) {
 						System.out.print(" " + k);
 						tcode += letter.toUpperCase() + " ";
 					}else {
@@ -287,7 +287,7 @@ public class ServerThread extends Thread{
 			String word = ua.getLetter();
 			Game game = ua.getGame();
 			String action = ua.getUsername() + " has guessed the word " + ua.getLetter() + "\n";
-			if(word.equals(ua.getWord())) {
+			if(word.toLowerCase().equals(ua.getWord().toLowerCase())) {
 				//fill in other names when working on multiplayer function
 				System.out.print(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game." );
 				for(int i = 0; i < game.numPlayers(); i++) {
@@ -314,7 +314,7 @@ public class ServerThread extends Thread{
 		else if(ua.getAction().equals("gWord")) {
 			System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - guessed word " + ua.getLetter());
 			String word = ua.getLetter();
-			if(word.equals(ua.getWord())) {
+			if(word.toLowerCase().equals(ua.getWord().toLowerCase())) {
 				//fill in other names when working on multiplayer function
 				System.out.println(simpDate.format(d) + " " + ua.getGameName() + " " + ua.getUsername() + " - " + ua.getLetter() + " is correct. " + ua.getUsername() + " wins the game.");
 				ua.setAction("gC");
