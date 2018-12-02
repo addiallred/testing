@@ -36,8 +36,10 @@ public class GameRoom {
 				System.out.println("Connected!");
 			}catch(SQLException sqle) {
 				System.out.println("Unable to connect to database " + cg.getDBC() + " with username " + cg.getDBU() + " and password " + cg.getDBP());
+				return;
 			}catch(ClassNotFoundException cnfe) {
 				System.out.println("Unable to connect to database " + cg.getDBC() + " with username " + cg.getDBU() + " and password " + cg.getDBP());
+				return;
 			}
 			serverThreads = new Vector<ServerThread>();
 			while(true) {

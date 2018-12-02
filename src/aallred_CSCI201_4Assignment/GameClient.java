@@ -1,5 +1,8 @@
 package aallred_CSCI201_4Assignment;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -742,6 +745,34 @@ public class GameClient extends Thread{
 				System.out.println("- Secret Word File");
 			}
 			return;
+		}
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
+			fr = new FileReader(cg.getWordFile());
+			br = new BufferedReader(fr);
+			String tword = "";
+			tword = br.readLine();
+		}catch(FileNotFoundException ioe) {
+			System.out.println("Seceret word file " +  cg.getWordFile() + " does not exist.");
+			return;
+		}catch(IOException ioe) {
+			System.out.println("Problem reading the word file");
+			return;
+		}finally {
+			if(br != null) {
+				try {
+					br.close();
+				}catch(IOException ioe) {
+					
+				}
+			}if(fr != null) {
+				try {
+					fr.close();
+				}catch(IOException ioe) {
+					
+				}
+			}
 		}
 		System.out.println("Server Hostname - " + cg.getHostName());
 		System.out.println("Server Port - " + cg.getPort());
