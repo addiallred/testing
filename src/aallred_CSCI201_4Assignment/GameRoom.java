@@ -65,7 +65,7 @@ public class GameRoom {
 		ResultSet rs = null;
 		boolean result = false;
 		try {
-			rs = myStm.executeQuery("SELECT * FROM userInfo WHERE username = '" + ua.getUsername() + "' AND userpassword = '" + ua.getPassword() + "';");
+			rs = myStm.executeQuery("SELECT * FROM userInfo WHERE BINARY username = '" + ua.getUsername() + "' AND BINARY userpassword = '" + ua.getPassword() + "';");
 			if(rs.next()) {
 				result = true;
 				int wins = rs.getInt(3);
@@ -143,12 +143,6 @@ public class GameRoom {
 		}
 	}
 	public void createGame(UserAction ua) {
-		try {
-			myStm.executeUpdate("INSERT INTO games (gameName, players, player1) VALUES ('"+ ua.getGameName()+"', '" + ua.getNumP() +"', '" + ua.getUsername() + "');");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
-		}
 		if(games == null) {
 			games = new ArrayList<Game>();
 		}
@@ -157,7 +151,8 @@ public class GameRoom {
 		ResultSet rs = null;
 		boolean result = false;
 		try {
-			rs = myStm.executeQuery("SELECT * FROM userInfo WHERE username = '" + ua.getUsername() + "';");
+			rs = myStm.executeQuery("SELECT * FROM userInfo WHERE BINARY username = '" + ua.getUsername() + "';");
+			System.out.println("in here");
 			if(rs.next()) {
 				result = true;
 				int wins = rs.getInt(3);
@@ -180,30 +175,11 @@ public class GameRoom {
 		return result;
 	}
 	public boolean newGame(UserAction ua) {
-		ResultSet rs = null;
 		boolean result = false;
-		try {
-			rs = myStm.executeQuery("SELECT * FROM games WHERE gameName = '" + ua.getGameName()  + "';");
-			if(rs.next()) {
-				result = true;
-				//when doing multi player, check to see if the game is full, if not
-				//return false because the player can still join this game, but only if
-				//they select two in the first place, maybe do a different procedure for this
-				
-			}
-		} catch (SQLException e) {
-			System.out.println("error" + e.getMessage());
-		}finally {
-			try {
-				if(rs != null) {
-
-					rs.close();
-				}
-			} catch (SQLException e2) {
-				// TODO: handle exception
-			}
-		}if(getGame(ua) == null) {
-			return false;
+		if(getGame(ua) == null) {
+			result = false;
+		}else {
+			result = true;
 		}
 		return result;
 	}public void updateWins(UserAction ua) {
