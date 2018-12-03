@@ -187,7 +187,7 @@ public class GameClient extends Thread{
 						ua.getGame().setWin(false);
 					}else {
 						System.out.println();
-						System.out.println("That is not the secret word!");
+						System.out.println("That is not the secret word! You lose and are no longer in the game!");
 						System.out.println();
 						System.out.println("The secret word was: " + game.getWord());
 						int lost = ua.getLose() + 1;
@@ -258,7 +258,14 @@ public class GameClient extends Thread{
 			}
 			System.out.println();
 			System.out.println("Thank you for playing Hangman!");
-			
+			ua.setAction("remG");
+			try {
+				oos.reset();
+				oos.writeObject(ua);
+				oos.flush();
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
 	}
 	//this is single player
 	public void playGame(UserAction ua, Game game) {
@@ -631,6 +638,7 @@ public class GameClient extends Thread{
 				System.out.println();
 				System.out.print("What is the name of the game?");
 				String game = scan.nextLine();
+				game = game.toLowerCase();
 				UserAction newua = new UserAction("currG", ua.getUsername(), ua.getPassword());
 				newua.setWin(ua.getWin());
 				newua.setLose(ua.getLose());

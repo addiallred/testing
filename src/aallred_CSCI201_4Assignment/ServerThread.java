@@ -127,6 +127,7 @@ public class ServerThread extends Thread{
 						System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - successfully joined game " + ua.getGameName() + "." );
 						ua.getGame().addUser(ua);
 						if(temp.numPlayers() == temp.getCap()) {
+							ua.getGame().setFull(true);
 						}else {
 							int num = temp.getCap() - temp.numPlayers();
 							System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - " + ua.getGameName() + " needs " + num + " more players to start game.");
@@ -134,6 +135,8 @@ public class ServerThread extends Thread{
 						gr.broadcast(ua.getGame());
 						broad = true;
 					}
+				}else {
+					System.out.println(simpDate.format(d) + " " + ua.getUsername() + " - Wants to join game " + ua.getGameName() + ", but it does not exist.");
 				}
 				try {
 					oos.writeObject(ua);
