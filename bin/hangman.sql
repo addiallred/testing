@@ -1,0 +1,10 @@
+DROP DATABASE hangman;
+CREATE DATABASE hangman;
+
+USE hangman;
+CREATE TABLE userInfo (
+	username VARCHAR(100) BINARY PRIMARY KEY NOT NULL,
+    userpassword VARCHAR(100) BINARY NOT NULL,
+    win INT(30) NOT NULL, 
+    lost INT(30)  NOT NULL
+);
